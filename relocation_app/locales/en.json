@@ -1,0 +1,78 @@
+{
+  "app": {
+    "name": "RelocateMind",
+    "tagline": "Discover your ideal country for relocation based on income, visa eligibility, and lifestyle goals."
+  },
+  "nav": {
+    "home": "Home",
+    "free_test": "Take Free Test",
+    "login": "Log In",
+    "register": "Create Account",
+    "dashboard": "Dashboard",
+    "logout": "Log Out"
+  },
+  "homepage": {
+    "hero_title": "Find the Country That Fits Your Income & Passport",
+    "hero_subtitle": "Get instant match scores for 8+ digital nomad and residency programs worldwide.",
+    "cta_take_test": "Take Free Test (No Account Needed)",
+    "cta_create_account": "Create Account Directly",
+    "feature_1_title": "Instant Matching",
+    "feature_1_desc": "Algorithmic match scoring based on hard income and visa requirements.",
+    "feature_2_title": "PLG Conversion",
+    "feature_2_desc": "Test anonymously first, save your custom plan into your account seamlessly.",
+    "feature_3_title": "Relocation Checklist",
+    "feature_3_desc": "Step-by-step action plans for every country matched."
+  },
+  "free_test": {
+    "title": "Anonymous Country Matcher",
+    "subtitle": "Fill in your details below to calculate your country match scores instantly.",
+    "passport_label": "Select Passport Country",
+    "income_label": "Monthly Income (USD)",
+    "income_placeholder": "e.g. 4000",
+    "income_type_label": "Primary Income Source",
+    "income_type_remote": "Remote Work / Employment",
+    "income_type_freelance": "Freelance / Business",
+    "income_type_passive": "Passive Income / Dividends",
+    "income_type_savings": "Savings / Capital",
+    "submit_button": "Calculate Matches Now"
+  },
+  "results": {
+    "title": "Your Relocation Match Results",
+    "subtitle": "Here are the top countries matched to your financial profile and passport.",
+    "save_banner_title": "Want to save your matches and unlock action plans?",
+    "save_banner_desc": "Create a free account now to store your plan and track your relocation checklist.",
+    "save_cta": "Create Account to Save My Plan",
+    "score_label": "Match Score",
+    "min_income": "Min. Income Req.",
+    "cost_of_living": "Cost of Living",
+    "tax_rate": "Est. Tax Rate",
+    "eligible_status": "Eligible",
+    "ineligible_status": "Requirements Not Met"
+  },
+  "auth": {
+    "register_title": "Create Your Account",
+    "register_subtitle": "Access your personalized relocation dashboard and saved plans.",
+    "login_title": "Welcome Back",
+    "login_subtitle": "Log in to access your dashboard.",
+    "email_label": "Email Address",
+    "password_label": "Password",
+    "confirm_password_label": "Confirm Password",
+    "btn_register": "Sign Up",
+    "btn_login": "Sign In",
+    "already_have_account": "Already have an account?",
+    "dont_have_account": "Don't have an account?",
+    "prepopulated_notice": "Your anonymous test results are ready and will be automatically saved to your new account!"
+  },
+  "dashboard": {
+    "title": "Your Relocation Dashboard",
+    "profile_summary": "Profile Summary",
+    "passport": "Passport",
+    "income": "Monthly Income",
+    "income_type": "Income Type",
+    "update_profile_title": "Update Profile & Recalculate Matches",
+    "saved_matches_title": "Your Top Country Matches",
+    "checklist_title": "Relocation Step-by-Step Checklist",
+    "btn_update": "Update Profile",
+    "no_matches": "No matches saved yet. Update your profile above to calculate matches."
+  }
+}

@@ -1,0 +1,226 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="relative pt-2 pb-12 sm:pt-6 sm:pb-20 md:pt-10 md:pb-24 space-y-16 sm:space-y-24">
+  
+  <!-- Hero Section -->
+  <div class="text-center max-w-4xl mx-auto space-y-5 sm:space-y-7 relative z-10">
+    
+    <div class="inline-flex items-center gap-2 px-3.5 sm:px-4 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-sky-400 text-xs font-mono tracking-wide uppercase">
+      {{ t('homepage.hero_tag') }}
+    </div>
+
+    <h1 class="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-100 via-slate-200 to-sky-300 leading-[1.12] sm:leading-[1.15] text-glow">
+      {{ t('homepage.hero_title') }}
+    </h1>
+
+    <p class="text-sm sm:text-lg md:text-xl text-slate-400 font-normal max-w-2xl mx-auto leading-relaxed px-2">
+      {{ t('homepage.hero_subtitle') }}
+    </p>
+
+    <div class="pt-4 flex flex-col sm:flex-row gap-3.5 sm:gap-4 justify-center items-center px-4 sm:px-0">
+      <a href="/free-test" class="btn-snappy w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-sky-500 via-blue-600 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-bold text-sm rounded-2xl shadow-xl shadow-sky-500/25 flex items-center justify-center gap-2.5 group">
+        <span>🚀</span>
+        <span>{{ t('homepage.cta_take_test') }}</span>
+        <span class="group-hover:translate-x-1 transition-transform font-mono">→</span>
+      </a>
+      
+      <a href="/register" class="btn-snappy w-full sm:w-auto px-8 py-4 glass-card hover:bg-slate-900 text-slate-200 hover:text-white font-semibold text-sm rounded-2xl border border-slate-800 hover:border-slate-700 flex items-center justify-center gap-2.5">
+        <span>👤</span>
+        <span>{{ t('homepage.cta_create_account') }}</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Interactive Sliding Deck Component (Consistent Deck Size + Smooth CSS Slide Transitions) -->
+  <div class="max-w-5xl mx-auto space-y-6">
+    <div class="text-center space-y-2 px-2">
+      <span class="text-xs font-mono text-sky-400 uppercase tracking-widest">{{ t('homepage.deck_tag') }}</span>
+      <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-100">{{ t('homepage.deck_title') }}</h2>
+    </div>
+
+    <!-- Snappy Tab Switcher Control Bar -->
+    <div class="grid grid-cols-3 gap-1.5 sm:gap-2.5 p-1.5 sm:p-2 bg-slate-950 border border-slate-800 rounded-2xl max-w-2xl mx-auto shadow-inner">
+      <button onclick="switchDeck('tab1')" id="btn-tab1" class="deck-btn deck-tab-snappy active-deck-tab py-3 px-2 sm:px-5 rounded-xl text-[11px] sm:text-xs font-mono font-bold border border-transparent flex items-center justify-center gap-1.5 cursor-pointer">
+        <span>{{ t('homepage.deck_tab1') }}</span>
+      </button>
+      <button onclick="switchDeck('tab2')" id="btn-tab2" class="deck-btn deck-tab-snappy text-slate-400 py-3 px-2 sm:px-5 rounded-xl text-[11px] sm:text-xs font-mono font-bold border border-transparent flex items-center justify-center gap-1.5 cursor-pointer">
+        <span>{{ t('homepage.deck_tab2') }}</span>
+      </button>
+      <button onclick="switchDeck('tab3')" id="btn-tab3" class="deck-btn deck-tab-snappy text-slate-400 py-3 px-2 sm:px-5 rounded-xl text-[11px] sm:text-xs font-mono font-bold border border-transparent flex items-center justify-center gap-1.5 cursor-pointer">
+        <span>{{ t('homepage.deck_tab3') }}</span>
+      </button>
+    </div>
+
+    <!-- Outer Card Wrapper (Grid Stacking: Fixed Consistent Dimensions) -->
+    <div class="glass-card border border-slate-800/80 rounded-3xl p-6 sm:p-8 md:p-10 shadow-2xl overflow-hidden neon-card-glow grid grid-cols-1">
+      
+      <!-- Slide Panel 1: Eligibility (Grid Cell 1/1) -->
+      <div id="deck-panel-1" class="deck-panel-stacked col-start-1 row-start-1 w-full space-y-6 transition-all duration-300 ease-out transform opacity-100 translate-x-0 pointer-events-auto z-10">
+        <div class="border-b border-slate-800/80 pb-3 flex items-center justify-between">
+          <span class="text-xs font-mono font-bold text-sky-400 uppercase tracking-widest">{{ t('homepage.deck_p1_module') }}</span>
+          <span class="text-[10px] font-mono text-slate-500 bg-slate-950 px-2.5 py-1 rounded border border-slate-800">AUTOMATED</span>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6 md:gap-8 items-center">
+          <div class="space-y-3.5">
+            <span class="text-xs font-mono text-sky-400 bg-sky-950/80 px-3 py-1 rounded-md border border-sky-800/50">{{ t('homepage.deck_p1_tag') }}</span>
+            <h3 class="text-xl sm:text-2xl font-bold text-slate-100">{{ t('homepage.deck_p1_title') }}</h3>
+            <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">{{ t('homepage.deck_p1_desc') }}</p>
+          </div>
+          <div class="p-5 sm:p-6 bg-slate-950/90 border border-slate-800/90 rounded-2xl font-mono text-xs space-y-3 shadow-inner">
+            <div class="flex justify-between text-slate-400"><span>{{ t('homepage.deck_p1_l1_label') }}</span><span class="text-emerald-400 font-bold">{{ t('homepage.deck_p1_l1_val') }}</span></div>
+            <div class="flex justify-between text-slate-400"><span>{{ t('homepage.deck_p1_l2_label') }}</span><span class="text-sky-400 font-bold">{{ t('homepage.deck_p1_l2_val') }}</span></div>
+            <div class="flex justify-between text-slate-400 pt-2 border-t border-slate-900"><span>{{ t('homepage.deck_p1_l3_label') }}</span><span class="text-emerald-400 font-bold">{{ t('homepage.deck_p1_l3_val') }}</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide Panel 2: Cost Analysis (Grid Cell 1/1) -->
+      <div id="deck-panel-2" class="deck-panel-stacked col-start-1 row-start-1 w-full space-y-6 transition-all duration-300 ease-out transform opacity-0 translate-x-8 pointer-events-none z-0">
+        <div class="border-b border-slate-800/80 pb-3 flex items-center justify-between">
+          <span class="text-xs font-mono font-bold text-indigo-400 uppercase tracking-widest">{{ t('homepage.deck_p2_module') }}</span>
+          <span class="text-[10px] font-mono text-slate-500 bg-slate-950 px-2.5 py-1 rounded border border-slate-800">REAL-TIME</span>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6 md:gap-8 items-center">
+          <div class="space-y-3.5">
+            <span class="text-xs font-mono text-indigo-400 bg-indigo-950/80 px-3 py-1 rounded-md border border-indigo-800/50">{{ t('homepage.deck_p2_tag') }}</span>
+            <h3 class="text-xl sm:text-2xl font-bold text-slate-100">{{ t('homepage.deck_p2_title') }}</h3>
+            <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">{{ t('homepage.deck_p2_desc') }}</p>
+          </div>
+          <div class="p-5 sm:p-6 bg-slate-950/90 border border-slate-800/90 rounded-2xl font-mono text-xs space-y-3 shadow-inner">
+            <div class="flex justify-between text-slate-400"><span>{{ t('homepage.deck_p2_l1_label') }}</span><span class="text-slate-200 font-bold">{{ t('homepage.deck_p2_l1_val') }}</span></div>
+            <div class="flex justify-between text-slate-400"><span>{{ t('homepage.deck_p2_l2_label') }}</span><span class="text-sky-400 font-bold">{{ t('homepage.deck_p2_l2_val') }}</span></div>
+            
+            <div class="space-y-1 pt-1">
+              <div class="w-full bg-slate-900 h-2 rounded-full overflow-hidden border border-slate-800">
+                <div class="bg-gradient-to-r from-sky-500 to-emerald-400 h-full w-[80%]"></div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-900 text-xs">
+              <div><span class="text-slate-500 block text-[10px] uppercase">{{ t('homepage.deck_p2_est_rent') }}</span><span class="text-slate-200 font-bold">$950/mo</span></div>
+              <div><span class="text-slate-500 block text-[10px] uppercase">{{ t('homepage.deck_p2_tax_rate') }}</span><span class="text-emerald-400 font-bold">15% - 20%</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide Panel 3: Action Steps (Grid Cell 1/1) -->
+      <div id="deck-panel-3" class="deck-panel-stacked col-start-1 row-start-1 w-full space-y-6 transition-all duration-300 ease-out transform opacity-0 translate-x-8 pointer-events-none z-0">
+        <div class="border-b border-slate-800/80 pb-3 flex items-center justify-between">
+          <span class="text-xs font-mono font-bold text-emerald-400 uppercase tracking-widest">{{ t('homepage.deck_p3_module') }}</span>
+          <span class="text-[10px] font-mono text-slate-500 bg-slate-950 px-2.5 py-1 rounded border border-slate-800">VERIFIED</span>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6 md:gap-8 items-center">
+          <div class="space-y-3.5">
+            <span class="text-xs font-mono text-emerald-400 bg-emerald-950/80 px-3 py-1 rounded-md border border-emerald-800/50">{{ t('homepage.deck_p3_tag') }}</span>
+            <h3 class="text-xl sm:text-2xl font-bold text-slate-100">{{ t('homepage.deck_p3_title') }}</h3>
+            <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">{{ t('homepage.deck_p3_desc') }}</p>
+          </div>
+          <div class="p-5 sm:p-6 bg-slate-950/90 border border-slate-800/90 rounded-2xl font-mono text-xs space-y-3 shadow-inner">
+            <div class="flex items-center gap-2.5 text-slate-300"><span class="text-emerald-400 font-bold">✓</span> <span>{{ t('homepage.deck_p3_s1') }}</span></div>
+            <div class="flex items-center gap-2.5 text-slate-300"><span class="text-emerald-400 font-bold">✓</span> <span>{{ t('homepage.deck_p3_s2') }}</span></div>
+            <div class="flex items-center gap-2.5 text-slate-300"><span class="text-emerald-400 font-bold">✓</span> <span>{{ t('homepage.deck_p3_s3') }}</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Top Destination Program Cards -->
+  <div class="space-y-6">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+      <div>
+        <span class="text-xs font-mono text-sky-400 uppercase tracking-widest">{{ t('homepage.destinations_tag') }}</span>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-100 mt-1">{{ t('homepage.destinations_title') }}</h2>
+      </div>
+      <a href="/free-test" class="text-xs font-mono text-sky-400 hover:text-sky-300 flex items-center gap-1">
+        <span>{{ t('homepage.destinations_link') }}</span>
+        <span>→</span>
+      </a>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      
+      <!-- Portugal -->
+      <div class="glass-card border border-slate-800/80 rounded-3xl p-6 sm:p-7 hover:border-sky-500/40 transition-all duration-300 space-y-4 group">
+        <div class="flex items-center justify-between gap-2">
+          <div class="flex items-center gap-3">
+            <span class="text-3xl p-2.5 bg-slate-950 rounded-2xl border border-slate-800 shadow-inner group-hover:scale-105 transition-transform">🇵🇹</span>
+            <div>
+              <h3 class="font-bold text-slate-100 text-lg">Portugal</h3>
+              <span class="text-xs text-sky-400 font-mono">D8 Nomad Visa</span>
+            </div>
+          </div>
+          <span class="text-xs font-mono font-bold bg-emerald-950 text-emerald-400 border border-emerald-800 px-3 py-1 rounded-full whitespace-nowrap">$3,200/mo</span>
+        </div>
+        <p class="text-xs text-slate-400 leading-relaxed">{{ t('homepage.sample_1_desc') }}</p>
+      </div>
+
+      <!-- Spain -->
+      <div class="glass-card border border-slate-800/80 rounded-3xl p-6 sm:p-7 hover:border-sky-500/40 transition-all duration-300 space-y-4 group">
+        <div class="flex items-center justify-between gap-2">
+          <div class="flex items-center gap-3">
+            <span class="text-3xl p-2.5 bg-slate-950 rounded-2xl border border-slate-800 shadow-inner group-hover:scale-105 transition-transform">🇪🇸</span>
+            <div>
+              <h3 class="font-bold text-slate-100 text-lg">Spain</h3>
+              <span class="text-xs text-sky-400 font-mono">Nomad Permit (DNV)</span>
+            </div>
+          </div>
+          <span class="text-xs font-mono font-bold bg-emerald-950 text-emerald-400 border border-emerald-800 px-3 py-1 rounded-full whitespace-nowrap">$2,700/mo</span>
+        </div>
+        <p class="text-xs text-slate-400 leading-relaxed">{{ t('homepage.sample_2_desc') }}</p>
+      </div>
+
+      <!-- Costa Rica -->
+      <div class="glass-card border border-slate-800/80 rounded-3xl p-6 sm:p-7 hover:border-sky-500/40 transition-all duration-300 space-y-4 group">
+        <div class="flex items-center justify-between gap-2">
+          <div class="flex items-center gap-3">
+            <span class="text-3xl p-2.5 bg-slate-950 rounded-2xl border border-slate-800 shadow-inner group-hover:scale-105 transition-transform">🇨🇷</span>
+            <div>
+              <h3 class="font-bold text-slate-100 text-lg">Costa Rica</h3>
+              <span class="text-xs text-sky-400 font-mono">Rentista Permit</span>
+            </div>
+          </div>
+          <span class="text-xs font-mono font-bold bg-emerald-950 text-emerald-400 border border-emerald-800 px-3 py-1 rounded-full whitespace-nowrap">$2,500/mo</span>
+        </div>
+        <p class="text-xs text-slate-400 leading-relaxed">{{ t('homepage.sample_3_desc') }}</p>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- Smooth CSS Grid-Stacked Tab Switcher -->
+<script>
+  function switchDeck(tabId) {
+    // 1. Highlight tab button
+    document.querySelectorAll('.deck-btn').forEach(btn => {
+      btn.classList.remove('active-deck-tab');
+      btn.classList.add('text-slate-400');
+    });
+    const activeBtn = document.getElementById('btn-' + tabId);
+    activeBtn.classList.add('active-deck-tab');
+    activeBtn.classList.remove('text-slate-400');
+
+    // 2. Animate grid-stacked panels
+    const targetNum = tabId.replace('tab', '');
+    
+    document.querySelectorAll('.deck-panel-stacked').forEach((panel, idx) => {
+      const panelNum = (idx + 1).toString();
+      if (panelNum === targetNum) {
+        panel.classList.remove('opacity-0', 'translate-x-8', 'pointer-events-none', 'z-0');
+        panel.classList.add('opacity-100', 'translate-x-0', 'pointer-events-auto', 'z-10');
+      } else {
+        panel.classList.remove('opacity-100', 'translate-x-0', 'pointer-events-auto', 'z-10');
+        panel.classList.add('opacity-0', 'translate-x-8', 'pointer-events-none', 'z-0');
+      }
+    });
+  }
+</script>
+{% endblock %}

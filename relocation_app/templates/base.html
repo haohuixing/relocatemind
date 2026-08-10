@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" class="dark h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ t('app.name') }} — Global Mobility Engine</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-full flex flex-col selection:bg-sky-500/30 selection:text-sky-200">
+
+  <div class="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[350px] bg-gradient-to-b from-sky-500/10 via-blue-600/5 to-transparent blur-[120px] pointer-events-none z-0"></div>
+
+  <header class="border-b border-slate-800/80 bg-slate-950/70 backdrop-blur-xl sticky top-0 z-50 transition-all">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      
+      <a href="/" class="flex items-center gap-2.5 group">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center text-white font-bold text-base shadow-lg shadow-sky-500/20 group-hover:scale-105 transition-transform">
+          🌐
+        </div>
+        <span class="font-bold text-lg tracking-tight text-slate-100 group-hover:text-sky-400 transition-colors">
+          {{ t('app.name') }}
+        </span>
+      </a>
+
+      <nav class="flex items-center gap-2 sm:gap-6">
+        <a href="/" class="text-xs sm:text-sm font-medium text-slate-400 hover:text-slate-100 transition-colors px-2 py-1">
+          {{ t('nav.home') }}
+        </a>
+        
+        <a href="/free-test" class="text-xs sm:text-sm font-medium text-sky-400 hover:text-sky-300 bg-sky-950/50 hover:bg-sky-900/60 border border-sky-800/50 px-3 py-1.5 rounded-lg transition-all shadow-sm shadow-sky-950">
+          {{ t('nav.free_test') }}
+        </a>
+
+        {% if request.state.is_authenticated %}
+          <a href="/dashboard" class="text-xs sm:text-sm font-medium text-slate-300 hover:text-white transition-colors px-2 py-1">
+            {{ t('nav.dashboard') }}
+          </a>
+          <a href="/logout" class="text-xs sm:text-sm font-medium text-rose-400/90 hover:text-rose-300 transition-colors px-2 py-1">
+            {{ t('nav.logout') }}
+          </a>
+        {% else %}
+          <a href="/login" class="text-xs sm:text-sm font-medium text-slate-400 hover:text-slate-100 transition-colors px-2 py-1">
+            {{ t('nav.login') }}
+          </a>
+          <a href="/register" class="text-xs sm:text-sm font-medium bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white px-4 py-2 rounded-lg transition-all shadow-md shadow-sky-500/20">
+            {{ t('nav.register') }}
+          </a>
+        {% endif %}
+      </nav>
+    </div>
+  </header>
+
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 z-10 relative">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="border-t border-slate-900 bg-slate-950/80 py-8 z-10 relative mt-auto">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-slate-500 text-xs">
+      <div class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span>All residency & income thresholds updated for 2026</span>
+      </div>
+      <p>&copy; {{ t('app.name') }}. All rights reserved.</p>
+    </div>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en" class="dark h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ t('app.name') }} — {{ t('homepage.hero_tag') }}</title>
+  
+  <!-- Inter & JetBrains Mono Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+        }
+      }
+    }
+  </script>
+
+  <style>
+    .cyber-grid {
+      background-image: 
+        linear-gradient(to right, rgba(56, 189, 248, 0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(56, 189, 248, 0.05) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+    .glass-card {
+      background: rgba(11, 17, 31, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+    .neon-card-glow {
+      box-shadow: 0 0 35px -5px rgba(56, 189, 248, 0.2), inset 0 0 20px -5px rgba(56, 189, 248, 0.08);
+    }
+    .text-glow {
+      text-shadow: 0 0 25px rgba(56, 189, 248, 0.5);
+    }
+    
+    /* Snappy Micro-Interactions & Button Physics */
+    .btn-snappy {
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      transform: translateZ(0);
+      will-change: transform, box-shadow;
+    }
+    .btn-snappy:hover {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 0 30px -4px rgba(56, 189, 248, 0.45);
+    }
+    .btn-snappy:active {
+      transform: translateY(1px) scale(0.96);
+      transition-duration: 0.08s;
+    }
+    
+    .deck-tab-snappy {
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .deck-tab-snappy:hover {
+      border-color: rgba(56, 189, 248, 0.5);
+      background: rgba(14, 165, 233, 0.12);
+      color: #38bdf8;
+      transform: translateY(-1px);
+    }
+    .deck-tab-snappy:active {
+      transform: scale(0.96);
+      transition-duration: 0.08s;
+    }
+    .active-deck-tab {
+      border-color: rgba(56, 189, 248, 0.9) !important;
+      background: rgba(14, 165, 233, 0.2) !important;
+      color: #38bdf8 !important;
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.35);
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-full flex flex-col selection:bg-sky-500/30 selection:text-sky-200 overflow-x-hidden">
+
+  <!-- Ambient Backdrop Grid & Glow -->
+  <div class="fixed inset-0 cyber-grid opacity-60 pointer-events-none z-0"></div>
+  <div class="fixed top-0 left-1/2 -translate-x-1/2 w-[100vw] max-w-[1300px] h-[400px] bg-gradient-to-b from-sky-500/18 via-blue-600/8 to-transparent blur-[140px] pointer-events-none z-0 transform-gpu"></div>
+
+  <!-- Navbar -->
+  <header class="border-b border-slate-800/80 glass-card sticky top-0 z-50 transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between">
+      
+      <!-- Logo -->
+      <a href="/" class="flex items-center gap-3 group">
+        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-sky-500 via-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-lg sm:text-xl shadow-lg shadow-sky-500/25 group-hover:scale-105 transition-transform transform-gpu">
+          🌍
+        </div>
+        <span class="font-extrabold text-lg sm:text-xl tracking-tight text-slate-100 group-hover:text-sky-400 transition-colors">
+          {{ t('app.name') }}
+        </span>
+      </a>
+
+      <!-- Desktop Navigation -->
+      <nav class="hidden md:flex items-center gap-5">
+        <a href="/" class="text-sm font-medium text-slate-400 hover:text-slate-100 transition-colors px-2 py-1">
+          {{ t('nav.home') }}
+        </a>
+        
+        <a href="/free-test" class="btn-snappy text-sm font-medium text-sky-400 hover:text-sky-300 bg-sky-950/60 hover:bg-sky-900/80 border border-sky-800/50 px-4 py-2 rounded-xl shadow-md shadow-sky-950/50 flex items-center gap-2 hover:border-sky-500/80">
+          <span>⚡</span>
+          <span>{{ t('nav.free_test') }}</span>
+        </a>
+
+        {% if request.state.is_authenticated %}
+          <a href="/dashboard" class="text-sm font-medium text-slate-300 hover:text-white transition-colors px-2 py-1">
+            {{ t('nav.dashboard') }}
+          </a>
+          <a href="/logout" class="text-sm font-medium text-rose-400/90 hover:text-rose-300 transition-colors px-2 py-1">
+            {{ t('nav.logout') }}
+          </a>
+        {% else %}
+          <a href="/login" class="text-sm font-medium text-slate-400 hover:text-slate-100 transition-colors px-2 py-1">
+            {{ t('nav.login') }}
+          </a>
+          <a href="/register" class="btn-snappy text-sm font-semibold bg-gradient-to-r from-sky-500 via-blue-600 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white px-5 py-2.5 rounded-xl shadow-md shadow-sky-500/20">
+            {{ t('nav.register') }}
+          </a>
+        {% endif %}
+
+        <!-- Language Selector Dropdown with Flag Emojis -->
+        <div class="relative inline-block text-left ml-2 border-l border-slate-800 pl-4">
+          <select onchange="changeLanguage(this.value)" class="bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 text-slate-200 text-xs font-mono py-2 px-3 rounded-xl focus:outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-500/30 transition-all cursor-pointer shadow-md">
+            <option value="en" selected>🇺🇸 English</option>
+            <option value="es">🇪🇸 Español</option>
+            <option value="fr">🇫🇷 Français</option>
+            <option value="de">🇩🇪 Deutsch</option>
+          </select>
+        </div>
+      </nav>
+
+      <!-- Mobile Controls -->
+      <div class="md:hidden flex items-center gap-2">
+        <select onchange="changeLanguage(this.value)" class="bg-slate-900 border border-slate-800 text-slate-200 text-xs font-mono py-2 px-2.5 rounded-xl focus:outline-none focus:border-sky-500 transition-all">
+          <option value="en" selected>🇺🇸 EN</option>
+          <option value="es">🇪🇸 ES</option>
+          <option value="fr">🇫🇷 FR</option>
+          <option value="de">🇩🇪 DE</option>
+        </select>
+
+        <button onclick="toggleMobileMenu()" id="mobile-menu-btn" class="btn-snappy flex items-center gap-1.5 px-3.5 py-2 bg-slate-900 border border-slate-700/80 rounded-xl text-sky-400 font-mono text-xs font-bold hover:bg-slate-800 transition-all">
+          <span id="menu-btn-text">{{ t('nav.menu') }}</span>
+          <span class="text-sm">☰</span>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Mobile Navigation Drawer -->
+    <div id="mobile-menu-drawer" class="hidden md:hidden glass-card border-t border-slate-800/80 px-4 pt-3 pb-6 space-y-3 font-mono text-sm">
+      <a href="/" class="block px-3 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-900 transition-all">
+        > {{ t('nav.home') }}
+      </a>
+      <a href="/free-test" class="block px-3 py-2.5 rounded-xl text-sky-400 bg-sky-950/40 border border-sky-800/50 font-bold hover:bg-sky-900/60 transition-all">
+        ⚡ {{ t('nav.free_test') }}
+      </a>
+
+      {% if request.state.is_authenticated %}
+        <a href="/dashboard" class="block px-3 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-900 transition-all">
+          > {{ t('nav.dashboard') }}
+        </a>
+        <a href="/logout" class="block px-3 py-2.5 rounded-xl text-rose-400 hover:bg-rose-950/30 transition-all">
+          x {{ t('nav.logout') }}
+        </a>
+      {% else %}
+        <a href="/login" class="block px-3 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-900 transition-all">
+          > {{ t('nav.login') }}
+        </a>
+        <a href="/register" class="block px-3 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 text-white font-bold hover:opacity-90 transition-all">
+          + {{ t('nav.register') }}
+        </a>
+      {% endif %}
+    </div>
+  </header>
+
+  <!-- View Body -->
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 md:py-12 z-10 relative">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-900 glass-card py-6 sm:py-8 z-10 relative mt-auto">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-slate-500 text-xs font-mono">
+      <div class="flex items-center gap-2">
+        <span class="text-slate-400">{{ t('app.footer_updated') }}</span>
+      </div>
+      <p>&copy; {{ t('app.name') }}. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    function toggleMobileMenu() {
+      const drawer = document.getElementById('mobile-menu-drawer');
+      const btnText = document.getElementById('menu-btn-text');
+      if (drawer.classList.contains('hidden')) {
+        drawer.classList.remove('hidden');
+        btnText.textContent = "{{ t('nav.close') }}";
+      } else {
+        drawer.classList.add('hidden');
+        btnText.textContent = "{{ t('nav.menu') }}";
+      }
+    }
+
+    function changeLanguage(langCode) {
+      console.log('Language set to:', langCode);
+    }
+  </script>
+
+</body>
+</html>

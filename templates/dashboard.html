@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="space-y-6 sm:space-y-8">
+  
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-slate-800/80">
+    <div>
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-100 tracking-tight">
+        {{ t('dashboard.title') }}
+      </h1>
+      <p class="text-xs sm:text-sm text-slate-400 mt-1">
+        {{ t('dashboard.active_user_prefix') }} <span class="font-mono text-sky-400 font-bold">{{ user.email }}</span>
+      </p>
+    </div>
+  </div>
+
+  <!-- Profile Update Form -->
+  <div class="glass-card border border-slate-800/80 rounded-3xl p-5 sm:p-8 shadow-xl">
+    <h2 class="text-sm sm:text-base font-bold text-slate-100 mb-4 flex items-center gap-2 font-mono">
+      <span>⚙️</span>
+      <span>{{ t('dashboard.update_profile_title') }}</span>
+    </h2>
+
+    <form action="/dashboard/update" method="POST" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div>
+        <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+          {{ t('dashboard.passport') }}
+        </label>
+        <input type="text" name="passport_country" value="{{ profile.passport_country }}" required class="w-full bg-slate-950 border border-slate-800 text-slate-100 rounded-xl px-4 py-2.5 sm:py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/50 focus:border-sky-400 transition-all font-medium">
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+          {{ t('dashboard.income') }}
+        </label>
+        <input type="number" name="monthly_income" value="{{ profile.monthly_income }}" required class="w-full bg-slate-950 border border-slate-800 text-slate-100 font-mono rounded-xl px-4 py-2.5 sm:py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/50 focus:border-sky-400 transition-all">
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+          {{ t('dashboard.income_type') }}
+        </label>
+        <select name="income_type" class="w-full bg-slate-950 border border-slate-800 text-slate-100 rounded-xl px-4 py-2.5 sm:py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/50 focus:border-sky-400 transition-all font-medium">
+          <option value="remote_work" {% if profile.income_type == 'remote_work' %}selected{% endif %}>{{ t('free_test.type_remote_title') }}</option>
+          <option value="freelance" {% if profile.income_type == 'freelance' %}selected{% endif %}>{{ t('free_test.type_freelance_title') }}</option>
+          <option value="passive_income" {% if profile.income_type == 'passive_income' %}selected{% endif %}>{{ t('free_test.type_passive_title') }}</option>
+          <option value="savings" {% if profile.income_type == 'savings' %}selected{% endif %}>{{ t('free_test.type_savings_title') }}</option>
+        </select>
+      </div>
+
+      <div class="sm:col-span-3 pt-2">
+        <button type="submit" class="btn-snappy w-full sm:w-auto bg-gradient-to-r from-sky-500 via-blue-600 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-bold text-xs px-6 py-3 rounded-xl shadow-md shadow-sky-500/20">
+          {{ t('dashboard.btn_update') }}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Saved Country Checklist Cards -->
+  <div class="space-y-6">
+    <h2 class="text-lg sm:text-xl font-bold text-slate-100 tracking-tight flex items-center gap-2">
+      <span>🎯</span>
+      <span>{{ t('dashboard.saved_matches_title') }}</span>
+    </h2>
+
+    {% if matches %}
+      <div class="grid gap-6">
+        {% for match in matches[:3] %}
+          <div class="glass-card border border-slate-800/80 rounded-3xl p-5 sm:p-8 shadow-xl space-y-5 sm:space-y-6">
+            
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div class="flex items-center gap-3.5">
+                <span class="text-3xl sm:text-4xl p-2.5 bg-slate-950 rounded-2xl border border-slate-800 shadow-inner">
+                  {{ match.flag }}
+                </span>
+                <div>
+                  <h3 class="text-xl sm:text-2xl font-bold text-slate-100">{{ match.name }}</h3>
+                  <span class="text-xs font-mono font-semibold text-sky-400 tracking-wider uppercase">{{ match.visa_name }}</span>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-3">
+                <div class="px-3.5 py-1.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 rounded-2xl text-xs font-mono font-bold">
+                  {{ t('results.score_label') }}: {{ match.score }}%
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-4 border-t border-slate-800/80 space-y-3">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs font-mono text-slate-400">
+                <span class="font-bold text-sky-400">{{ t('dashboard.checklist_header') }}</span>
+                <span class="progress-counter">0 / {{ match.checklist|length }} {{ t('dashboard.completed_label') }}</span>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                {% for step in match.checklist %}
+                  <label class="flex items-start gap-3 p-3.5 bg-slate-950/80 rounded-2xl border border-slate-800/80 hover:border-sky-500/40 cursor-pointer transition-all group">
+                    <input type="checkbox" onchange="updateChecklistProgress(this)" class="task-checkbox mt-0.5 w-4 h-4 rounded-md bg-slate-900 border-slate-700 text-sky-500 focus:ring-0 focus:ring-offset-0 cursor-pointer">
+                    <span class="task-label text-xs text-slate-300 group-hover:text-slate-100 transition-all leading-relaxed">{{ step }}</span>
+                  </label>
+                {% endfor %}
+              </div>
+            </div>
+
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="text-slate-500 text-sm italic font-mono">{{ t('dashboard.no_matches') }}</p>
+    {% endif %}
+  </div>
+
+</div>
+
+<script>
+  function updateChecklistProgress(checkbox) {
+    const card = checkbox.closest('.space-y-5, .space-y-6');
+    const checkboxes = card.querySelectorAll('.task-checkbox');
+    const counter = card.querySelector('.progress-counter');
+    const label = checkbox.nextElementSibling;
+    
+    if (checkbox.checked) {
+      label.classList.add('line-through', 'text-slate-500');
+    } else {
+      label.classList.remove('line-through', 'text-slate-500');
+    }
+
+    const completed = card.querySelectorAll('.task-checkbox:checked').length;
+    counter.textContent = completed + ' / ' + checkboxes.length + ' {{ t("dashboard.completed_label") }}';
+  }
+</script>
+{% endblock %}

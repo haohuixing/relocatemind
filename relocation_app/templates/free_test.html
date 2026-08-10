@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+  
+  <div class="bg-slate-900/70 border border-slate-800/80 rounded-2xl p-6 sm:p-10 backdrop-blur-xl shadow-2xl shadow-black/60 relative overflow-hidden">
+    
+    <div class="absolute top-0 right-0 w-64 h-64 bg-sky-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="mb-8">
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-100 tracking-tight">
+        {{ t('free_test.title') }}
+      </h1>
+      <p class="text-sm text-slate-400 mt-2">
+        {{ t('free_test.subtitle') }}
+      </p>
+    </div>
+
+    <form action="/match" method="POST" class="space-y-8">
+      
+      <div class="space-y-5 pt-2">
+        <div class="text-xs font-bold uppercase tracking-wider text-sky-400 border-b border-slate-800/80 pb-2 flex items-center gap-2">
+          <span>01</span>
+          <span>Passport & Financial Capacity</span>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+            {{ t('free_test.passport_label') }}
+          </label>
+          <select name="passport_country" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-500/50 focus:border-sky-500 transition-all text-sm font-medium">
+            <option value="United States">United States 🇺🇸</option>
+            <option value="United Kingdom">United Kingdom 🇬🇧</option>
+            <option value="Canada">Canada 🇨🇦</option>
+            <option value="Australia">Australia 🇦🇺</option>
+            <option value="India">India 🇮🇳</option>
+            <option value="Brazil">Brazil 🇧🇷</option>
+            <option value="Germany">Germany 🇩🇪</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+            {{ t('free_test.income_label') }}
+          </label>
+          <div class="relative">
+            <span class="absolute left-4 top-3.5 text-slate-500 font-mono text-sm">$</span>
+            <input type="number" min="0" step="100" name="monthly_income" placeholder="{{ t('free_test.income_placeholder') }}" required class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-4 py-3 text-slate-100 font-mono text-sm placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500/50 focus:border-sky-500 transition-all">
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-5 pt-2">
+        <div class="text-xs font-bold uppercase tracking-wider text-sky-400 border-b border-slate-800/80 pb-2 flex items-center gap-2">
+          <span>02</span>
+          <span>Income Structure & Employment</span>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-3">
+            {{ t('free_test.income_type_label') }}
+          </label>
+          
+          <div class="grid sm:grid-cols-2 gap-3">
+            <label class="relative flex items-center p-4 bg-slate-950/80 border border-slate-800 rounded-xl cursor-pointer hover:border-slate-700 transition-all group">
+              <input type="radio" name="income_type" value="remote_work" checked class="peer sr-only">
+              <div class="w-full">
+                <div class="font-medium text-sm text-slate-200 peer-checked:text-sky-300">Remote Employment</div>
+                <div class="text-xs text-slate-500 mt-0.5">W2 / Fixed Salary</div>
+              </div>
+              <div class="absolute inset-0 rounded-xl border-2 border-transparent peer-checked:border-sky-500 peer-checked:bg-sky-500/10 pointer-events-none transition-all"></div>
+            </label>
+
+            <label class="relative flex items-center p-4 bg-slate-950/80 border border-slate-800 rounded-xl cursor-pointer hover:border-slate-700 transition-all group">
+              <input type="radio" name="income_type" value="freelance" class="peer sr-only">
+              <div class="w-full">
+                <div class="font-medium text-sm text-slate-200 peer-checked:text-sky-300">Freelance / Business</div>
+                <div class="text-xs text-slate-500 mt-0.5">Self-Employed / B2B</div>
+              </div>
+              <div class="absolute inset-0 rounded-xl border-2 border-transparent peer-checked:border-sky-500 peer-checked:bg-sky-500/10 pointer-events-none transition-all"></div>
+            </label>
+
+            <label class="relative flex items-center p-4 bg-slate-950/80 border border-slate-800 rounded-xl cursor-pointer hover:border-slate-700 transition-all group">
+              <input type="radio" name="income_type" value="passive_income" class="peer sr-only">
+              <div class="w-full">
+                <div class="font-medium text-sm text-slate-200 peer-checked:text-sky-300">Passive / Dividends</div>
+                <div class="text-xs text-slate-500 mt-0.5">Real Estate, Stocks, Pension</div>
+              </div>
+              <div class="absolute inset-0 rounded-xl border-2 border-transparent peer-checked:border-sky-500 peer-checked:bg-sky-500/10 pointer-events-none transition-all"></div>
+            </label>
+
+            <label class="relative flex items-center p-4 bg-slate-950/80 border border-slate-800 rounded-xl cursor-pointer hover:border-slate-700 transition-all group">
+              <input type="radio" name="income_type" value="savings" class="peer sr-only">
+              <div class="w-full">
+                <div class="font-medium text-sm text-slate-200 peer-checked:text-sky-300">Savings & Capital</div>
+                <div class="text-xs text-slate-500 mt-0.5">Liquid Bank Deposits</div>
+              </div>
+              <div class="absolute inset-0 rounded-xl border-2 border-transparent peer-checked:border-sky-500 peer-checked:bg-sky-500/10 pointer-events-none transition-all"></div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-4">
+        <button type="submit" class="w-full py-4 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-semibold text-sm rounded-xl shadow-xl shadow-sky-500/25 transition-all flex items-center justify-center gap-2 group">
+          <span>{{ t('free_test.submit_button') }}</span>
+          <span class="group-hover:translate-x-1 transition-transform">→</span>
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>
+{% endblock %}
