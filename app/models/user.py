@@ -1,15 +1,11 @@
 from datetime import datetime
-from sqlalchemy import Column, DateTime, Integer, String
-from sqlalchemy.orm import relationship
-from app.database import Base
+from typing import Optional
+from pydantic import BaseModel, EmailStr, ConfigDict
 
 
-class User(Base):
-    __tablename__ = "users"
+class UserSession(BaseModel):
+    id: str
+    email: EmailStr
+    created_at: Optional[datetime] = None
 
-    id = Column(Integer, primary_key=True, index=True)
-    email = Column(String, unique=True, index=True, nullable=False)
-    password_hash = Column(String, nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
-
-    profile = relationship("UserProfile", back_populates="user", uselist=False)
+    model_config = ConfigDict(from_attributes=True)

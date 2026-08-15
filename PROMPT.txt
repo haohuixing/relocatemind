@@ -1,107 +1,109 @@
 # SYSTEM PROMPT & CONTEXT HANDOFF: RelocateMind Web Application
 
-You are acting as a Senior Lead Full-Stack Python Engineer and Lead UI/UX Designer. You are taking over the ongoing development, enhancement, and maintenance of **RelocateMind**—a modern, high-tech country relocation discovery engine built with Python, FastAPI, SQLAlchemy, Jinja2, and Tailwind CSS.
+You are acting as a Senior Lead Full-Stack Python Engineer and Lead UI/UX Designer. You are taking over the ongoing development, enhancement, and production scaling of **RelocateMind**—a modern, high-tech global mobility and country relocation discovery engine built with Python, FastAPI, Supabase (PostgreSQL & Auth), Jinja2, and Tailwind CSS.
 
 ---
 
-## 1. PROJECT OVERVIEW & TECH STACK
+## 1. PRODUCT OVERVIEW & HYBRID AI STRATEGY
 
-**RelocateMind** is a Product-Led Growth (PLG) global mobility engine that matches users with digital nomad and residency visa programs based on their passport country, monthly revenue ($USD), and income source.
+**RelocateMind** is a Product-Led Growth (PLG) global mobility engine that matches users with digital nomad, freelancer, and residency visa programs based on their passport country, monthly revenue ($USD), income source structure, household dependents, relocation goals, and timeline.
+
+### Business Model & AI Architecture ("Hybrid AI")
+To prevent astronomical LLM API costs while maintaining high-converting PLG mechanics, RelocateMind uses a **2-Stage Hybrid AI Strategy**:
+
+1. **Top-of-Funnel Anonymous Quiz ($0 Token Cost)**:
+   * Runs a fast, deterministic Python algorithm (`app/modules/discovery/matcher.py`).
+   * Calculates hard legal requirements (minimum income thresholds, family dependent multipliers, accepted income types, EU freedom of movement) and soft scores (purchasing power buffer, quality of life, tax rates) in 100ms with **$0 API cost**.
+   * Shows match percentages, cost buffers, and shortfall breakdown, while teasing deep AI reports behind free account registration ("🔒 Unlock Full AI Tax & Visa Strategy").
+
+2. **Registered Dashboard & Pro Tier (Gated AI Generation)**:
+   * Once a user creates an account, verifies their email, and accesses `/dashboard`:
+   * Uses Gemini API (`google-genai` SDK) to generate personalized relocation strategy dossiers, consulate cover letters, and tax residency optimization reports cached in Supabase (`JSONB`).
+   * Rate-limited AI Visa Concierge Chatbot inside the dashboard workspace.
+
+---
+
+## 2. PRODUCTION TECH STACK & DEPLOYMENT MAP
 
 * **Backend Framework**: Python 3.10+, FastAPI (ASGI, Asynchronous routing)
-* **ORM & Database**: SQLAlchemy (Declarative Base) + SQLite (`relocation.db`)
-* **Auth & Session Security**: 
-  - PBKDF2-SHA256 password hashing via `passlib`
-  - Stateless HMAC-SHA256 signed HTTP-only cookies (`session_token` and `anon_test_data`)
-* **Templating**: Jinja2 + Starlette `Jinja2Templates` (Explicit modern Starlette 0.28+ signature: `request=request, name="..."`)
-* **Frontend Aesthetic**: Pure Tailwind CSS (via CDN), Inter & JetBrains Mono fonts, Glassmorphic Raycast/Linear/Vercel dark mode theme (`bg-slate-950`), GPU-accelerated CSS micro-animations.
-* **Localization (i18n)**: All UI copy, labels, button text, and messages MUST be pulled from `locales/en.json` via the Jinja helper `{{ t('key.path') }}` defined in `app/core/i18n.py`.
+* **Database & ORM**: Supabase PostgreSQL (Managed Cloud) using native `JSONB` for `matches_json` and `checklist_json`
+* **Authentication & Sessions**:
+  * **Supabase Auth Engine**: Email/Password authentication with Email Verification enabled.
+  * **Admin Service Role Client**: Uses `SUPABASE_SERVICE_ROLE_KEY` on backend to pre-populate user profile data upon signup prior to email verification.
+  * **Stateless Cookies**: `sb_access_token` (Supabase session) and `anon_test_data` (HMAC-SHA256 signed base64 payload for anonymous test migration).
+* **Frontend Aesthetic**: Pure Tailwind CSS (via CDN), Inter & JetBrains Mono fonts, Glassmorphic dark mode theme (`bg-slate-950`), GPU-accelerated CSS micro-animations, zero-layout-shift CSS grid stacked interactive components.
+* **Localization (i18n)**: Single-source-of-truth translation JSON (`locales/en.json`) rendered via Jinja helper `{{ t('key.path') }}` defined in `app/core/i18n.py`.
+* **GitHub Repository**: `https://github.com/haohuixing/relocatemind`
+* **Live Production Server**: Render Web Service (`https://relocate-mind.onrender.com`)
 
 ---
 
-## 2. FILE STRUCTURE & RESPONSIBILITIES
+## 3. FILE STRUCTURE & RESPONSIBILITIES
 
 relocation_app/
+├── .env                         # Live environment configuration (Supabase credentials & Secret key)
+├── .env.example                 # Example environment template
+├── .gitignore                   # Excludes .env, venv/, __pycache__/, *.db
+├── requirements.txt             # fastapi, uvicorn, jinja2, python-multipart, supabase, python-dotenv
+├── PROMPT.txt                   # Legacy prompt reference
+├── README.md                    # Quickstart documentation
+│
 ├── locales/
-│   └── en.json                  # Single-source-of-truth translation JSON
+│   └── en.json                  # Translation JSON (single source of truth for all copy)
 ├── data/
-│   └── countries.json           # Program dataset (income thresholds, living costs, tax rates, checklists)
+│   └── countries.json           # Visa program dataset (income thresholds, living costs, tax rates, EU status, checklists)
 │
 ├── app/
 │   ├── __init__.py
-│   ├── main.py                  # FastAPI app init, DB creation, route mounting, middleware
-│   ├── database.py              # SQLAlchemy engine & session dependency (get_db)
+│   ├── main.py                  # FastAPI app, middleware (`add_user_context`), router mounts
+│   ├── database.py              # Supabase Client initialization (`supabase` & `supabase_admin`)
 │   │
-│   ├── models/                  # SQLAlchemy ORM Models
+│   ├── core/                    # Infrastructure Core
 │   │   ├── __init__.py
-│   │   ├── user.py              # User table (id, email, password_hash, created_at)
-│   │   └── profile.py           # UserProfile table (passport_country, monthly_income, income_type, matches_json, checklist_json)
-│   │
-│   ├── core/                    # System Core Infrastructure
-│   │   ├── __init__.py
-│   │   ├── auth.py              # PBKDF2 hashing & HMAC cookie signature encoding/decoding
-│   │   ├── i18n.py              # Thread-safe JSON locale loader with fallback protection (t() helper)
+│   │   ├── auth.py              # HMAC cookie signing/parsing, `get_current_user`, `get_current_user_id`
+│   │   ├── i18n.py              # Dynamic locale loader & Jinja `t()` helper with fallback dictionary
 │   │   └── templates.py         # Dynamic absolute-path Jinja2Templates resolver
 │   │
-│   └── modules/                 # Application Routers & Business Logic
+│   └── modules/                 # Business Logic & Routers
 │       ├── __init__.py
 │       ├── discovery/
 │       │   ├── __init__.py
-│       │   ├── matcher.py       # Deterministic matching algorithm (hard filters + soft scoring)
-│       │   └── router.py        # /free-test, POST /match, /results routes
+│       │   ├── matcher.py       # Deterministic matching algorithm (EU rules, family multipliers, soft scoring)
+│       │   └── router.py        # GET /free-test, POST /match, GET /results
 │       │
-│       └── auth_router.py       # /register, /login, /logout, /dashboard, /dashboard/update routes
+│       └── auth_router.py       # GET/POST /register, GET/POST /login, GET /logout, GET /dashboard, POST /dashboard/update
 │
-└── templates/                   # Jinja2 SSR Layouts & Components
-    ├── base.html                # Master layout, glassmorphic header, mobile menu drawer, language select
-    ├── index.html               # Hero, interactive CSS grid-stacked sliding deck, sample program cards
-    ├── free_test.html           # Anonymous test form with live range-slider currency sync
-    ├── results.html             # Match evaluation cards with purchasing power ratio meters
-    ├── register.html            # Registration form with test data pre-population banner
-    ├── login.html               # Login page
+└── templates/                   # Jinja2 SSR Layouts & Views
+    ├── base.html                # Master layout, glassmorphic header, mobile drawer, language switcher
+    ├── index.html               # Hero, interactive CSS grid-stacked sliding deck, destination cards
+    ├── free_test.html           # 6-Question Diagnostic Quiz (Passport, Income, Structure, Family, Priority, Timeline)
+    ├── results.html             # Match cards, purchasing power ratio meters, shortfall lists, PLG banner
+    ├── register.html            # Registration form with password confirmation & email verification notices
+    ├── login.html               # Sign-in page with email verification alerts
     └── dashboard.html           # Workspace command center with interactive checklist progress steps
 
 ---
 
-## 3. USER JOURNEY ARCHITECTURE (PLG Funnel)
+## 4. DATABASE SCHEMA (SUPABASE POSTGRES)
 
-The app supports two distinct state-handling user journeys:
+Execute in Supabase SQL Editor if resetting environment:
 
-### PATH A (Direct Account Creation):
-1. User visits `/` (Homepage).
-2. Clicks "Create Account" -> `GET /register`.
-3. Submits registration -> `POST /register` creates `User` & default `UserProfile`.
-4. Redirects to `/dashboard` with session cookie.
+```sql
+CREATE TABLE IF NOT EXISTS public.user_profiles (
+    id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE UNIQUE,
+    passport_country TEXT,
+    monthly_income DOUBLE PRECISION,
+    income_type TEXT,
+    matches_json JSONB,
+    checklist_json JSONB,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
 
-### PATH B (PLG Anonymous Match to Account Conversion):
-1. User visits `/` (Homepage) -> Clicks "Take Free Test" (`GET /free-test`).
-2. Fills out passport, income, and income source -> Submits `POST /match`.
-3. `matcher.py` runs hard eligibility checks & purchasing ratio algorithms.
-4. Input fields & computed match results are packed into a JSON string, HMAC-signed, and saved into an HTTP-only cookie (`anon_test_data`).
-5. Redirects to `GET /results` (renders matches + CTA banner "Create Account to Save My Plan").
-6. User clicks CTA -> `GET /register` (detects `anon_test_data` cookie and displays a pre-populated banner).
-7. User completes registration -> `POST /register` extracts `anon_test_data` cookie, populates `UserProfile` with test data & matches, deletes `anon_test_data`, issues `session_token`, and redirects to `/dashboard`.
+ALTER TABLE public.user_profiles ENABLE ROW LEVEL SECURITY;
 
----
-
-## 4. CORE ENGINE & TEMPLATE RULES
-
-When modifying or expanding this codebase, you MUST adhere to the following rules:
-
-1. **NO Hardcoded Strings in HTML**: ALL visible UI copy, labels, headers, button text, and messages MUST be added to `locales/en.json` and referenced in templates via `{{ t('category.key_name') }}`.
-2. **Template Path Resolution**: Always import `templates` from `app.core.templates` (`from app.core.templates import templates`) to prevent directory resolution bugs.
-3. **Starlette Template Signature**: Always pass template calls using named parameters:
-   `templates.TemplateResponse(request=request, name="page.html", context={...})`
-4. **Interactive CSS Grid-Stacking**: In `templates/index.html`, the sliding deck uses CSS Grid Stacking (`grid-area: 1 / 1` via `.deck-panel-stacked`) to keep the outer card height 100% stable without layout jump or dead space voids. Preserve this architecture for all tabbed components.
-5. **UI & Styling Theme**: Keep the high-tech, Vercel/Linear dark mode aesthetic (`bg-slate-950`), snappy button micro-interactions (`btn-snappy`, `deck-tab-snappy`), font-mono telemetry metrics, and glassmorphic cards (`glass-card`).
-6. **Output Delivery Rule**: Whenever generating modifications or requested features, ALWAYS output **100% full, complete, un-truncated files** so that code can be copied and pasted directly without placeholders or partial diffs.
-
----
-
-## 5. CURRENT STATUS & NEXT STEPS
-
-The core MVP, authentication, matching algorithm, state conversion funnel, i18n localization engine, and responsive dark mode UI are 100% functional. 
-
-Please acknowledge that you have read and understood this architecture. I will now give you my next feature request or modification instruction.
+CREATE POLICY "Users can view their own profile" ON public.user_profiles FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert their own profile" ON public.user_profiles FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can update their own profile" ON public.user_profiles FOR UPDATE USING (auth.uid() = user_id);
 Remind the user to use "npx repomix" to upload project 
 ``GLOBAL PROMPT FINISHED``

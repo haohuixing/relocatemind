@@ -1,19 +1,38 @@
-from sqlalchemy import Column, Float, ForeignKey, Integer, String, Text
-from sqlalchemy.orm import relationship
-from app.database import Base
+from datetime import datetime
+from typing import Any, Dict, List, Optional
+from pydantic import BaseModel, Field, ConfigDict
 
 
-class UserProfile(Base):
-    __tablename__ = "user_profiles"
+class QuizInput(BaseModel):
+    passport_country: str = Field(..., example="United States")
+    monthly_income: float = Field(..., ge=0, example=4000.0)
+    income_type: str = Field(..., example="remote_work")
 
-    id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(
-        Integer, ForeignKey("users.id"), unique=True, nullable=False
-    )
-    passport_country = Column(String, nullable=True)
-    monthly_income = Column(Float, nullable=True)
-    income_type = Column(String, nullable=True)
-    matches_json = Column(Text, nullable=True)
-    checklist_json = Column(Text, nullable=True)
 
-    user = relationship("User", back_populates="profile")
+class MatchResult(BaseModel):
+    country_id: str
+    name: str
+    flag: str
+    visa_name: str
+    min_income_usd: float
+    cost_of_living_usd: float
+    tax_rate_pct: float
+    quality_of_life_score: float
+    summary: str
+    checklist: List[str]
+    eligible: bool
+    reasons: List[str]
+    score: int
+
+
+class UserProfile(BaseModel):
+    id: Optional[int] = None
+    user_id: str
+    passport_country: Optional[str] = "United States"
+    monthly_income: Optional[float] = 4000.0
+    income_type: Optional[str] = "remote_work"
+    matches_json: Optional[List[Dict[str, Any]]] = None
+    checklist_json: Optional[List[Dict[str, Any]]] = None
+    created_at: Optional[datetime] = None
+
+    model_config = ConfigDict(from_attributes=True)
