@@ -4,14 +4,19 @@ from fastapi import APIRouter, Form, Request, Response
 from fastapi.responses import HTMLResponse, RedirectResponse
 
 from app.core.auth import (
-    create_signed_token,
     get_current_user,
     parse_signed_token,
 )
+from app.core.config import get_settings
 from app.core.i18n import t
 from app.core.templates import templates
-from app.database import supabase, supabase_admin
-from app.modules.discovery.matcher import calculate_matches
+from app.database import get_supabase, get_supabase_admin
+from app.models.profile import AssessmentInput
+from app.modules.discovery.service import (
+    assessment_for_profile,
+    calculate_matches_for_assessment,
+    default_assessment,
+)
 
 auth_router = APIRouter()
 
@@ -61,7 +66,7 @@ def register_post(
 
     try:
         # 2. Register user via Supabase Auth Engine
-        auth_response = supabase.auth.sign_up({"email": clean_email, "password": password})
+        auth_response = get_supabase().auth.sign_up({"email": clean_email, "password": password})
         
         if not auth_response.user:
             return templates.TemplateResponse(
@@ -81,19 +86,36 @@ def register_post(
         test_cookie = request.cookies.get("anon_test_data")
         test_data = parse_signed_token(test_cookie) if test_cookie else None
 
-        if test_data:
-            passport = test_data.get("passport_country", "United States")
-            income = float(test_data.get("monthly_income", 4000.0))
-            inc_type = test_data.get("income_type", "remote_work")
-            matches = test_data.get("matches", [])
+        # Transitional compatibility: new cookies contain only validated assessment input;
+        # older result cookies are ignored rather than trusted as match snapshots.
+        assessment = None
+        if test_data and isinstance(test_data.get("assessment"), dict):
+            try:
+                assessment = AssessmentInput.model_validate(test_data["assessment"])
+            except Exception:
+                assessment = None
+
+        if assessment:
+            passport = assessment.passport_country
+            income = assessment.monthly_income
+            inc_type = assessment.income_type
+            matches = [
+                match.model_dump()
+                for match in calculate_matches_for_assessment(assessment).matches
+            ]
         else:
             passport = "United States"
             income = 4000.0
             inc_type = "remote_work"
-            matches = calculate_matches(passport, income, inc_type)
+            matches = [
+                match.model_dump()
+                for match in calculate_matches_for_assessment(
+                    assessment_for_profile(passport, income, inc_type)
+                ).matches
+            ]
 
         # 4. Upsert User Profile entry using admin client (bypasses RLS before email confirmation)
-        supabase_admin.table("user_profiles").upsert({
+        get_supabase_admin().table("user_profiles").upsert({
             "user_id": user_id,
             "passport_country": passport,
             "monthly_income": income,
@@ -110,8 +132,10 @@ def register_post(
                 key="sb_access_token",
                 value=access_token,
                 httponly=True,
+                secure=get_settings().cookie_secure,
                 max_age=86400,
                 samesite="lax",
+                path="/",
             )
             redirect.delete_cookie(key="anon_test_data")
             return redirect
@@ -165,7 +189,7 @@ def login_post(
     clean_email = email.strip()
 
     try:
-        auth_response = supabase.auth.sign_in_with_password(
+        auth_response = get_supabase().auth.sign_in_with_password(
             {"email": clean_email, "password": password}
         )
 
@@ -187,8 +211,10 @@ def login_post(
             key="sb_access_token",
             value=access_token,
             httponly=True,
+            secure=get_settings().cookie_secure,
             max_age=86400,
             samesite="lax",
+            path="/",
         )
         redirect.delete_cookie(key="anon_test_data")
         return redirect
@@ -213,7 +239,7 @@ def login_post(
 @auth_router.get("/logout")
 def logout():
     try:
-        supabase.auth.sign_out()
+        get_supabase().auth.sign_out()
     except Exception:
         pass
     redirect = RedirectResponse(url="/", status_code=303)
@@ -230,14 +256,17 @@ def dashboard_page(request: Request):
     user_id = user["id"]
     
     profile_res = (
-        supabase_admin.table("user_profiles")
+        get_supabase_admin().table("user_profiles")
         .select("*")
         .eq("user_id", user_id)
         .execute()
     )
 
     if not profile_res.data:
-        default_matches = calculate_matches("United States", 4000.0, "remote_work")
+        default_matches = [
+            match.model_dump()
+            for match in calculate_matches_for_assessment(default_assessment()).matches
+        ]
         new_profile = {
             "user_id": user_id,
             "passport_country": "United States",
@@ -246,7 +275,7 @@ def dashboard_page(request: Request):
             "matches_json": json.dumps(default_matches),
             "checklist_json": json.dumps([]),
         }
-        supabase_admin.table("user_profiles").insert(new_profile).execute()
+        get_supabase_admin().table("user_profiles").insert(new_profile).execute()
         profile = new_profile
     else:
         profile = profile_res.data[0]
@@ -287,9 +316,14 @@ def update_profile(
         return RedirectResponse(url="/login", status_code=303)
 
     user_id = user["id"]
-    updated_matches = calculate_matches(passport_country, monthly_income, income_type)
+    updated_matches = [
+        match.model_dump()
+        for match in calculate_matches_for_assessment(
+            assessment_for_profile(passport_country, monthly_income, income_type)
+        ).matches
+    ]
 
-    supabase_admin.table("user_profiles").update({
+    get_supabase_admin().table("user_profiles").update({
         "passport_country": passport_country,
         "monthly_income": monthly_income,
         "income_type": income_type,

@@ -1,6 +1,6 @@
 import json
 import os
-from typing import Any, List, Dict
+from typing import Any, List, Dict, Optional
 from app.core.i18n import get_project_root
 
 EU_PASSPORTS = {
@@ -26,7 +26,6 @@ def calculate_matches(
     savings: Optional[float] = None,
     dependents: Optional[str] = None,
     region: Optional[str] = None,
-    climate: Optional[str] = None,
     priority: Optional[str] = None,
     timeline: Optional[str] = None,
 ) -> List[Dict[str, Any]]:
@@ -35,7 +34,7 @@ def calculate_matches(
 
     is_user_eu = passport_country in EU_PASSPORTS if passport_country else False
 
-    # Dependents multiplier breakdown
+    # Dependents multiplier calculation
     has_spouse = dependents in ["couple", "family_small", "family_large"]
     num_children = 1 if dependents == "family_small" else (2 if dependents == "family_large" else 0)
 
@@ -52,62 +51,68 @@ def calculate_matches(
 
         shortfall_usd = 0.0
 
-        # Hard Income Check (Only if income was answered)
+        # Hard Income Check
         if monthly_income is not None and not is_eu_freedom and monthly_income < adjusted_min_income:
             eligible = False
             shortfall_usd = round(adjusted_min_income - monthly_income)
             reasons.append(f"Income (${monthly_income:,.0f}) is below family minimum (${adjusted_min_income:,.0f}/mo)")
 
-        # Hard Income Structure Check (Only if structure was answered)
+        # Hard Income Structure Check
         if income_type and not is_eu_freedom and income_type not in country.get("allowed_income_types", []):
             eligible = False
             reasons.append(f"Income structure '{income_type.replace('_', ' ').title()}' is not accepted")
 
-        # Hard Savings / Bank Deposit Check (Only if savings was answered)
+        # Hard Savings Check
         min_savings = float(country.get("min_savings_usd", 0))
         if savings is not None and not is_eu_freedom and min_savings > 0 and savings < min_savings:
             eligible = False
-            reasons.append(f"Liquid savings (${savings:,.0f}) is below minimum bank deposit requirement (${min_savings:,.0f})")
+            reasons.append(f"Liquid savings (${savings:,.0f}) is below required bank deposit (${min_savings:,.0f})")
 
-        # Hard Region Filter (Only if region was specified and not 'any')
-        if region and region != "any" and country.get("region") != region:
-            eligible = False
-            reasons.append(f"Program is outside preferred region ({region.title()})")
-
-        # 2. Dynamic Mathematical Match Scoring (0-99%)
-        score = 65.0
+        # 2. Hyper-Responsive Score Engine (Dynamic Swings)
+        score = 50.0  # Dynamic baseline
 
         if eligible:
+            # Region Preference Swing (+15% or -20%)
+            if region and region != "any":
+                if country.get("region") == region:
+                    score += 15.0
+                else:
+                    score -= 20.0  # Major penalty if outside requested region
+
+            # EU Freedom Boost
             if is_eu_freedom:
                 score += 20.0
                 reasons.append("✓ EU Freedom of Movement granted")
             elif monthly_income is not None and adjusted_min_income > 0:
                 income_ratio = monthly_income / adjusted_min_income
-                score += min(15.0, (income_ratio - 1.0) * 12.0)
+                score += min(25.0, (income_ratio - 1.0) * 15.0)
 
-            # Soft Climate Match
-            if climate and climate != "any" and country.get("climate") == climate:
-                score += 8.0
+            # Savings Buffer Boost
+            if savings is not None and min_savings > 0 and savings >= min_savings * 1.5:
+                score += 10.0
 
-            # Soft Priority Weighted Match
-            if priority == "low_tax" and country.get("tax_rate_pct", 100) <= 15:
-                score += 10.0
-            elif priority == "low_cost" and country.get("cost_of_living_usd", 5000) <= 1400:
-                score += 10.0
+            # Priority Alignment Swing (+15% or -10%)
+            tax_rate = country.get("tax_rate_pct", 100)
+            if priority == "low_tax":
+                if tax_rate == 0:
+                    score += 15.0
+                elif tax_rate <= 15:
+                    score += 10.0
+                else:
+                    score -= 10.0
+            elif priority == "low_cost" and country.get("cost_of_living_usd", 5000) <= 1300:
+                score += 15.0
             elif priority == "quality_of_life" and country.get("quality_of_life_score", 0) >= 88:
-                score += 8.0
+                score += 12.0
             elif priority == "fast_process" and country.get("processing_time_months", 12) <= 1:
-                score += 8.0
+                score += 15.0
             elif priority == "citizenship" and country.get("citizenship_pathway_years", 99) <= 5:
-                score += 10.0
+                score += 15.0
 
-            # Purchasing Power Buffer
-            if monthly_income is not None and monthly_income >= country.get("cost_of_living_usd", 1000) * 2.0:
-                score += 5.0
-
-            final_score = min(99, round(score))
+            # Clamp between 15% and 99%
+            final_score = max(15, min(99, round(score)))
         else:
-            final_score = max(15, round(35 - len(reasons) * 8))
+            final_score = max(15, round(30 - (shortfall_usd / 200)))
 
         results.append(
             {

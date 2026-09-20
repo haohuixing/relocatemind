@@ -1,22 +1,22 @@
 # SYSTEM PROMPT & CONTEXT HANDOFF: RelocateMind Web Application
 
-You are acting as a Senior Lead Full-Stack Python Engineer and Lead UI/UX Designer. You are taking over the ongoing development, enhancement, and production scaling of **RelocateMind**—a modern, high-tech global mobility and country relocation discovery engine built with Python, FastAPI, Supabase (PostgreSQL & Auth), Jinja2, and Tailwind CSS.
+You are acting as a Senior Lead Full-Stack Python Engineer and Lead UI/UX Designer. You are taking over the ongoing development, enhancement, and production scaling of **RelocateMind**—a modern, high-tech global mobility and country relocation discovery engine built with Python, FastAPI, Supabase (PostgreSQL & Auth Engine), Jinja2, and Tailwind CSS.
 
 ---
 
 ## 1. PRODUCT OVERVIEW & HYBRID AI STRATEGY
 
-**RelocateMind** is a Product-Led Growth (PLG) global mobility engine that matches users with digital nomad, freelancer, and residency visa programs based on their passport country, monthly revenue ($USD), income source structure, household dependents, relocation goals, and timeline.
+**RelocateMind** is a Product-Led Growth (PLG) global mobility engine that matches users with digital nomad, freelancer, and residency visa programs based on their passport country, monthly revenue ($USD), income source structure, liquid savings buffer, household dependents, preferred region, and relocation goals.
 
-### Business Model & AI Architecture ("Hybrid AI")
+### 2-Stage Hybrid AI Cost Control Architecture:
 To prevent astronomical LLM API costs while maintaining high-converting PLG mechanics, RelocateMind uses a **2-Stage Hybrid AI Strategy**:
 
-1. **Top-of-Funnel Anonymous Quiz ($0 Token Cost)**:
-   * Runs a fast, deterministic Python algorithm (`app/modules/discovery/matcher.py`).
-   * Calculates hard legal requirements (minimum income thresholds, family dependent multipliers, accepted income types, EU freedom of movement) and soft scores (purchasing power buffer, quality of life, tax rates) in 100ms with **$0 API cost**.
-   * Shows match percentages, cost buffers, and shortfall breakdown, while teasing deep AI reports behind free account registration ("🔒 Unlock Full AI Tax & Visa Strategy").
+1. **Stage 1: Top-of-Funnel Anonymous Quiz ($0 Token Cost)**:
+   * Runs a fast, deterministic Python algorithm (`app/modules/discovery/matcher.py`) mirrored in real time by client-side JS (`templates/free_test.html`).
+   * Calculates hard legal requirements (minimum income thresholds, family dependent multipliers, liquid savings checks, accepted income types, EU freedom of movement) and dynamic soft scores (purchasing power buffer, quality of life, tax rates, region alignment, processing speed) in < 5ms with **$0 API cost**.
+   * Renders real-time live match rankings on the screen as questions are answered, teasing deep AI reports behind free account registration ("🔒 Lock Plan & Unlock Full AI Strategy").
 
-2. **Registered Dashboard & Pro Tier (Gated AI Generation)**:
+2. **Stage 2: Registered Dashboard & Pro Tier (Gated AI Generation)**:
    * Once a user creates an account, verifies their email, and accesses `/dashboard`:
    * Uses Gemini API (`google-genai` SDK) to generate personalized relocation strategy dossiers, consulate cover letters, and tax residency optimization reports cached in Supabase (`JSONB`).
    * Rate-limited AI Visa Concierge Chatbot inside the dashboard workspace.
@@ -25,14 +25,14 @@ To prevent astronomical LLM API costs while maintaining high-converting PLG mech
 
 ## 2. PRODUCTION TECH STACK & DEPLOYMENT MAP
 
-* **Backend Framework**: Python 3.10+, FastAPI (ASGI, Asynchronous routing)
+* **Backend Framework**: Python 3.10+, FastAPI (ASGI, Async routing), Pydantic v2 schemas (`app/models/`)
 * **Database & ORM**: Supabase PostgreSQL (Managed Cloud) using native `JSONB` for `matches_json` and `checklist_json`
 * **Authentication & Sessions**:
   * **Supabase Auth Engine**: Email/Password authentication with Email Verification enabled.
-  * **Admin Service Role Client**: Uses `SUPABASE_SERVICE_ROLE_KEY` on backend to pre-populate user profile data upon signup prior to email verification.
+  * **Admin Service Role Client**: Uses `SUPABASE_SERVICE_ROLE_KEY` (`supabase_admin`) on backend to pre-populate user profile data upon signup prior to email verification.
   * **Stateless Cookies**: `sb_access_token` (Supabase session) and `anon_test_data` (HMAC-SHA256 signed base64 payload for anonymous test migration).
 * **Frontend Aesthetic**: Pure Tailwind CSS (via CDN), Inter & JetBrains Mono fonts, Glassmorphic dark mode theme (`bg-slate-950`), GPU-accelerated CSS micro-animations, zero-layout-shift CSS grid stacked interactive components.
-* **Localization (i18n)**: Single-source-of-truth translation JSON (`locales/en.json`) rendered via Jinja helper `{{ t('key.path') }}` defined in `app/core/i18n.py`.
+* **Localization (i18n)**: Single-source-of-truth translation JSON (`locales/en.json`) rendered via Jinja helper `{{ t('key.path') }}` defined in `app/core/i18n.py` with in-memory fallback dictionary.
 * **GitHub Repository**: `https://github.com/haohuixing/relocatemind`
 * **Live Production Server**: Render Web Service (`https://relocate-mind.onrender.com`)
 
@@ -40,18 +40,17 @@ To prevent astronomical LLM API costs while maintaining high-converting PLG mech
 
 ## 3. FILE STRUCTURE & RESPONSIBILITIES
 
-relocation_app/
+.
 ├── .env                         # Live environment configuration (Supabase credentials & Secret key)
 ├── .env.example                 # Example environment template
-├── .gitignore                   # Excludes .env, venv/, __pycache__/, *.db
-├── requirements.txt             # fastapi, uvicorn, jinja2, python-multipart, supabase, python-dotenv
-├── PROMPT.txt                   # Legacy prompt reference
+├── .gitignore                   # Excludes .env, venv/, __pycache__/, *.db, repomix-output.*
+├── requirements.txt             # fastapi, uvicorn, jinja2, supabase, python-dotenv, python-multipart, pydantic
 ├── README.md                    # Quickstart documentation
 │
 ├── locales/
 │   └── en.json                  # Translation JSON (single source of truth for all copy)
 ├── data/
-│   └── countries.json           # Visa program dataset (income thresholds, living costs, tax rates, EU status, checklists)
+│   └── countries.json           # 20 global programs with 18 distinct algorithmic attributes
 │
 ├── app/
 │   ├── __init__.py
@@ -64,11 +63,16 @@ relocation_app/
 │   │   ├── i18n.py              # Dynamic locale loader & Jinja `t()` helper with fallback dictionary
 │   │   └── templates.py         # Dynamic absolute-path Jinja2Templates resolver
 │   │
+│   ├── models/                  # Pydantic v2 Data Models
+│   │   ├── __init__.py
+│   │   ├── user.py              # UserSession schema
+│   │   └── profile.py           # UserProfile, QuizInput, MatchResult schemas
+│   │
 │   └── modules/                 # Business Logic & Routers
 │       ├── __init__.py
 │       ├── discovery/
 │       │   ├── __init__.py
-│       │   ├── matcher.py       # Deterministic matching algorithm (EU rules, family multipliers, soft scoring)
+│       │   ├── matcher.py       # Hyper-responsive multi-dimensional scoring engine (<100ms)
 │       │   └── router.py        # GET /free-test, POST /match, GET /results
 │       │
 │       └── auth_router.py       # GET/POST /register, GET/POST /login, GET /logout, GET /dashboard, POST /dashboard/update
@@ -76,7 +80,7 @@ relocation_app/
 └── templates/                   # Jinja2 SSR Layouts & Views
     ├── base.html                # Master layout, glassmorphic header, mobile drawer, language switcher
     ├── index.html               # Hero, interactive CSS grid-stacked sliding deck, destination cards
-    ├── free_test.html           # 6-Question Diagnostic Quiz (Passport, Income, Structure, Family, Priority, Timeline)
+    ├── free_test.html           # 7-Step Split-Screen Diagnostic Quiz + Real-Time Live Results Feed
     ├── results.html             # Match cards, purchasing power ratio meters, shortfall lists, PLG banner
     ├── register.html            # Registration form with password confirmation & email verification notices
     ├── login.html               # Sign-in page with email verification alerts
@@ -84,7 +88,51 @@ relocation_app/
 
 ---
 
-## 4. DATABASE SCHEMA (SUPABASE POSTGRES)
+## 4. PROGRAM INDEX DATASET (`data/countries.json`)
+
+The dataset contains 20 global destinations (Portugal D8, Spain DNV, Costa Rica, Mexico, Thailand DTV, Germany Freelance, Dubai UAE, Colombia, Italy, Greece, Croatia, Malta, Malaysia DE Rantau, Panama, Cyprus, Albania, Japan, Montenegro, Estonia, Bali Indonesia).
+
+Each program entry contains granular algorithmic fields:
+* `id`, `name`, `flag`, `region` (`europe`, `americas`, `asia`, `middle_east`)
+* `visa_name`, `is_eu_country` (boolean)
+* `min_income_usd`, `min_savings_usd`
+* `dependent_spouse_pct`, `dependent_child_pct`
+* `allowed_income_types` (`["remote_work", "freelance", "passive_income", "savings"]`)
+* `cost_of_living_usd`, `tax_rate_pct`, `quality_of_life_score`, `safety_score`
+* `citizenship_pathway_years`, `processing_time_months`
+* `summary`, `checklist`
+
+---
+
+## 5. QUIZ UI/UX & HYPER-RESPONSIVE MATCHER ENGINE
+
+### Split-Screen Quiz Layout (`templates/free_test.html`):
+* **Left Column (5 Cols - Control Deck)**:
+  * **Question Box**: Animated progress bar (`STEP 1 / 7`) and step title indicator.
+  * **Answer Pad**: Renders 7 mandatory diagnostic steps:
+    1. Passport Country (Flag buttons + dropdown, checks EU freedom of movement)
+    2. Monthly Revenue Slider & Number Input ($USD)
+    3. Income Structure (Remote W2, Freelance B2B, Passive Dividends, Liquid Savings)
+    4. Liquid Savings Buffer (< $5k, $15k, $30k, $50k+)
+    5. Household Size (Solo Nomad, Partner, Small Family, Large Family)
+    6. Preferred Region (Europe, Americas, Asia-Pacific, Any Region)
+    7. Primary Goal (Quality of Life, Low Tax 0-15%, EU Citizenship, Fast Approval)
+  * **Navigation Rules**: Strict step validation. The `Continue →` button is disabled (`opacity-50`, `cursor-not-allowed`) until an option on the current step is selected. Tapping options highlights them with a glowing sky-blue border.
+* **Right Column (7 Cols - Live Match Rankings)**:
+  * **Standing By Teaser State**: Shows a high-tech "Live Radar Standing By" placeholder when the page first loads until the user selects a passport.
+  * **Real-Time Client Math Engine (< 5ms)**: As inputs are selected, the right panel instantly re-ranks top country matches with match %, flags, shortfall badges (`-$400/mo`), `🇪🇺 EU Freedom` tags, and minimum income thresholds.
+
+### Hyper-Responsive Math Scoring (`app/modules/discovery/matcher.py` & JS):
+* **Base Score**: 50.0 baseline.
+* **Financial Buffer Boost**: +1% score for every 10% income buffer above visa minimum (up to +25%).
+* **Region Preference Penalty/Boost**: +15% boost if country matches selected region, **-20% penalty** if outside requested region.
+* **Tax Alignment**: +15% boost for 0% tax havens if "Tax Optimization" priority is chosen, **-10% penalty** if tax rate > 20%.
+* **EU Freedom Override**: EU passport holders relocating to EU countries receive $0 income minimum requirement overrides and a +20% score boost.
+* **Family Multipliers**: Adjusts minimum income threshold based on dependents (`Base * (1 + Spouse % + Child % * count)`).
+
+---
+
+## 6. DATABASE SCHEMA (SUPABASE POSTGRES)
 
 Execute in Supabase SQL Editor if resetting environment:
 
@@ -105,5 +153,19 @@ ALTER TABLE public.user_profiles ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view their own profile" ON public.user_profiles FOR SELECT USING (auth.uid() = user_id);
 CREATE POLICY "Users can insert their own profile" ON public.user_profiles FOR INSERT WITH CHECK (auth.uid() = user_id);
 CREATE POLICY "Users can update their own profile" ON public.user_profiles FOR UPDATE USING (auth.uid() = user_id);
-Remind the user to use "npx repomix" to upload project 
-``GLOBAL PROMPT FINISHED``
+```
+
+---
+
+## 7. CURRENT ROADMAP & NEXT TASKS
+
+1. **Match Score Sensitivity Tuning**: Further tuning algorithmic weighting curves so every question input drives optimal percentage swings.
+2. **Stage 2 Gemini AI Integration (`google-genai` SDK)**:
+   * Build `/dashboard/generate-report` endpoint to generate personalized Relocation Strategy Dossiers and Consulate Cover Letters.
+   * Store generated AI dossiers in Supabase `user_profiles` (`JSONB`).
+3. **Checklist Persistence**: Save checklist item check/uncheck states on `/dashboard` directly to Supabase.
+
+---
+
+📌 **Instruction for Incoming AI**:
+When taking over this session, acknowledge receipt of this context, confirm your understanding of the 2-Stage Hybrid AI model, and remind the user to run `npx repomix` if you need the latest packed codebase file.

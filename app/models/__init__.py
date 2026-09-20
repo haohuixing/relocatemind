@@ -1,4 +1,17 @@
 from app.models.user import UserSession
-from app.models.profile import UserProfile, QuizInput, MatchResult
+from app.models.profile import (
+    AssessmentInput,
+    AssessmentSnapshot,
+    MatchResult,
+    QuizInput,
+    UserProfile,
+)
 
-__all__ = ["UserSession", "UserProfile", "QuizInput", "MatchResult"]
+__all__ = [
+    "AssessmentInput",
+    "AssessmentSnapshot",
+    "MatchResult",
+    "QuizInput",
+    "UserProfile",
+    "UserSession",
+]

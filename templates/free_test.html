@@ -12,13 +12,13 @@
       <div class="glass-card border border-slate-800/80 rounded-3xl p-6 shadow-xl space-y-3">
         <div class="flex items-center justify-between text-xs font-mono">
           <span id="step_indicator" class="px-2.5 py-1 bg-sky-500/20 text-sky-400 border border-sky-500/30 rounded-lg font-bold">
-            STEP 1 / 8
+            STEP 1 / 7
           </span>
           <span id="step_title_badge" class="text-slate-400 font-medium">Passport Nationality</span>
         </div>
 
         <div class="w-full bg-slate-950 h-2 rounded-full overflow-hidden border border-slate-800/80">
-          <div id="progress_bar" class="bg-gradient-to-r from-sky-500 via-blue-600 to-indigo-500 h-full w-[12.5%] transition-all duration-300"></div>
+          <div id="progress_bar" class="bg-gradient-to-r from-sky-500 via-blue-600 to-indigo-500 h-full w-[14.2%] transition-all duration-300"></div>
         </div>
       </div>
 
@@ -139,7 +139,7 @@
           <div class="quiz-step space-y-5 transition-all duration-300 opacity-0 hidden transform translate-x-8" data-step="4" data-title="Liquid Savings">
             <div class="space-y-1">
               <h2 class="text-xl font-extrabold text-slate-100">Liquid Savings Buffer <span class="text-sky-400">*</span></h2>
-              <p class="text-xs text-slate-400">Bank account capital available to prove financial self-sufficiency.</p>
+              <p class="text-xs text-slate-400">Capital available in bank accounts to prove financial buffer.</p>
             </div>
 
             <div class="grid grid-cols-2 gap-2.5 pt-1">
@@ -164,7 +164,7 @@
               <label onclick="selectCardOption(this, 'savings', '50000', 4)" class="quiz-option-card p-3 bg-slate-950/90 border border-slate-800 rounded-xl cursor-pointer hover:border-sky-500/50 transition-all text-center group">
                 <input type="radio" name="savings" value="50000" class="sr-only">
                 <div class="text-xl font-mono font-bold text-slate-200 group-hover:text-sky-300">$50,000+</div>
-                <div class="text-[10px] text-slate-500 font-mono mt-0.5">High Wealth / Golden Visas</div>
+                <div class="text-[10px] text-slate-500 font-mono mt-0.5">High Capital Buffer</div>
               </label>
             </div>
           </div>
@@ -173,7 +173,7 @@
           <div class="quiz-step space-y-5 transition-all duration-300 opacity-0 hidden transform translate-x-8" data-step="5" data-title="Household Size">
             <div class="space-y-1">
               <h2 class="text-xl font-extrabold text-slate-100">Household Size <span class="text-sky-400">*</span></h2>
-              <p class="text-xs text-slate-400">Relocating family members adjust minimum income thresholds.</p>
+              <p class="text-xs text-slate-400">Relocating family members adjust minimum income requirements.</p>
             </div>
 
             <div class="grid grid-cols-2 gap-2.5 pt-1">
@@ -237,67 +237,33 @@
             </div>
           </div>
 
-          <!-- STEP 7: CLIMATE PREFERENCE -->
-          <div class="quiz-step space-y-5 transition-all duration-300 opacity-0 hidden transform translate-x-8" data-step="7" data-title="Climate Preference">
-            <div class="space-y-1">
-              <h2 class="text-xl font-extrabold text-slate-100">Climate Preference <span class="text-sky-400">*</span></h2>
-              <p class="text-xs text-slate-400">Weather environment you prefer.</p>
-            </div>
-
-            <div class="grid grid-cols-2 gap-2.5 pt-1">
-              <label onclick="selectCardOption(this, 'climate', 'mediterranean', 7)" class="quiz-option-card p-3 bg-slate-950/90 border border-slate-800 rounded-xl cursor-pointer hover:border-sky-500/50 transition-all text-center group">
-                <input type="radio" name="climate" value="mediterranean" class="sr-only">
-                <div class="text-2xl mb-1">🌦️</div>
-                <div class="font-bold text-xs text-slate-200 group-hover:text-sky-300">Mediterranean</div>
-              </label>
-
-              <label onclick="selectCardOption(this, 'climate', 'tropical', 7)" class="quiz-option-card p-3 bg-slate-950/90 border border-slate-800 rounded-xl cursor-pointer hover:border-sky-500/50 transition-all text-center group">
-                <input type="radio" name="climate" value="tropical" class="sr-only">
-                <div class="text-2xl mb-1">☀️</div>
-                <div class="font-bold text-xs text-slate-200 group-hover:text-sky-300">Tropical</div>
-              </label>
-
-              <label onclick="selectCardOption(this, 'climate', 'temperate', 7)" class="quiz-option-card p-3 bg-slate-950/90 border border-slate-800 rounded-xl cursor-pointer hover:border-sky-500/50 transition-all text-center group">
-                <input type="radio" name="climate" value="temperate" class="sr-only">
-                <div class="text-2xl mb-1">❄️</div>
-                <div class="font-bold text-xs text-slate-200 group-hover:text-sky-300">Four Seasons</div>
-              </label>
-
-              <label onclick="selectCardOption(this, 'climate', 'any', 7)" class="quiz-option-card p-3 bg-slate-950/90 border border-slate-800 rounded-xl cursor-pointer hover:border-sky-500/50 transition-all text-center group">
-                <input type="radio" name="climate" value="any" class="sr-only">
-                <div class="text-2xl mb-1">🌤️</div>
-                <div class="font-bold text-xs text-slate-200 group-hover:text-sky-300">Any Climate</div>
-              </label>
-            </div>
-          </div>
-
-          <!-- STEP 8: PRIMARY GOAL -->
-          <div class="quiz-step space-y-5 transition-all duration-300 opacity-0 hidden transform translate-x-8" data-step="8" data-title="Primary Goal">
+          <!-- STEP 7: PRIMARY GOAL -->
+          <div class="quiz-step space-y-5 transition-all duration-300 opacity-0 hidden transform translate-x-8" data-step="7" data-title="Primary Goal">
             <div class="space-y-1">
               <h2 class="text-xl font-extrabold text-slate-100">Primary Goal <span class="text-sky-400">*</span></h2>
               <p class="text-xs text-slate-400">Final step! Locks your plan into persistent memory.</p>
             </div>
 
             <div class="grid grid-cols-2 gap-2.5 pt-1">
-              <label onclick="selectCardOption(this, 'priority', 'quality_of_life', 8)" class="quiz-option-card p-3 bg-slate-950/90 border border-slate-800 rounded-xl cursor-pointer hover:border-sky-500/50 transition-all text-center group">
+              <label onclick="selectCardOption(this, 'priority', 'quality_of_life', 7)" class="quiz-option-card p-3 bg-slate-950/90 border border-slate-800 rounded-xl cursor-pointer hover:border-sky-500/50 transition-all text-center group">
                 <input type="radio" name="priority" value="quality_of_life" class="sr-only">
                 <div class="text-2xl mb-1">🌴</div>
                 <div class="font-bold text-xs text-slate-200 group-hover:text-sky-300">Quality of Life</div>
               </label>
 
-              <label onclick="selectCardOption(this, 'priority', 'low_tax', 8)" class="quiz-option-card p-3 bg-slate-950/90 border border-slate-800 rounded-xl cursor-pointer hover:border-sky-500/50 transition-all text-center group">
+              <label onclick="selectCardOption(this, 'priority', 'low_tax', 7)" class="quiz-option-card p-3 bg-slate-950/90 border border-slate-800 rounded-xl cursor-pointer hover:border-sky-500/50 transition-all text-center group">
                 <input type="radio" name="priority" value="low_tax" class="sr-only">
                 <div class="text-2xl mb-1">💰</div>
                 <div class="font-bold text-xs text-slate-200 group-hover:text-sky-300">0% - 15% Tax</div>
               </label>
 
-              <label onclick="selectCardOption(this, 'priority', 'citizenship', 8)" class="quiz-option-card p-3 bg-slate-950/90 border border-slate-800 rounded-xl cursor-pointer hover:border-sky-500/50 transition-all text-center group">
+              <label onclick="selectCardOption(this, 'priority', 'citizenship', 7)" class="quiz-option-card p-3 bg-slate-950/90 border border-slate-800 rounded-xl cursor-pointer hover:border-sky-500/50 transition-all text-center group">
                 <input type="radio" name="priority" value="citizenship" class="sr-only">
                 <div class="text-2xl mb-1">🇪🇺</div>
                 <div class="font-bold text-xs text-slate-200 group-hover:text-sky-300">EU Citizenship</div>
               </label>
 
-              <label onclick="selectCardOption(this, 'priority', 'fast_process', 8)" class="quiz-option-card p-3 bg-slate-950/90 border border-slate-800 rounded-xl cursor-pointer hover:border-sky-500/50 transition-all text-center group">
+              <label onclick="selectCardOption(this, 'priority', 'fast_process', 7)" class="quiz-option-card p-3 bg-slate-950/90 border border-slate-800 rounded-xl cursor-pointer hover:border-sky-500/50 transition-all text-center group">
                 <input type="radio" name="priority" value="fast_process" class="sr-only">
                 <div class="text-2xl mb-1">⚡</div>
                 <div class="font-bold text-xs text-slate-200 group-hover:text-sky-300">Fast Approval</div>
@@ -368,7 +334,7 @@
   const EU_PASSPORTS = ["Germany", "France", "Spain", "Italy", "Portugal", "Netherlands", "Belgium", "Ireland", "Austria", "Sweden", "Finland", "Denmark"];
 
   let currentStep = 1;
-  const totalSteps = 8;
+  const totalSteps = 7;
 
   const range = document.getElementById('income_range');
   const num = document.getElementById('income_num');
@@ -408,7 +374,6 @@
     validateAndRenderCurrentStep();
   }
 
-  // Strict Validation Rules per Step
   function isStepValid(step) {
     if (step === 1) return Boolean(document.getElementById('passport_country').value);
     if (step === 2) return Boolean(num.value && Number(num.value) > 0);
@@ -416,8 +381,7 @@
     if (step === 4) return Boolean(document.querySelector('input[name="savings"]:checked'));
     if (step === 5) return Boolean(document.querySelector('input[name="dependents"]:checked'));
     if (step === 6) return Boolean(document.querySelector('input[name="region"]:checked'));
-    if (step === 7) return Boolean(document.querySelector('input[name="climate"]:checked'));
-    if (step === 8) return Boolean(document.querySelector('input[name="priority"]:checked'));
+    if (step === 7) return Boolean(document.querySelector('input[name="priority"]:checked'));
     return false;
   }
 
@@ -495,7 +459,7 @@
     }
   }
 
-  // Real-Time Math Engine (< 5ms)
+  // Hyper-Responsive Math Engine (< 5ms)
   function onInputChange() {
     const feed = document.getElementById('live_cards_feed');
     const dot = document.getElementById('live_dot');
@@ -535,7 +499,6 @@
     const savings = Number(document.querySelector('input[name="savings"]:checked')?.value) || 0;
     const dependents = document.querySelector('input[name="dependents"]:checked')?.value || 'solo';
     const region = document.querySelector('input[name="region"]:checked')?.value;
-    const climate = document.querySelector('input[name="climate"]:checked')?.value;
     const priority = document.querySelector('input[name="priority"]:checked')?.value;
 
     const isEU = EU_PASSPORTS.includes(passport);
@@ -564,19 +527,44 @@
       if (!isEUFreedom && p.min_savings_usd > 0 && savings < p.min_savings_usd) {
         eligible = false;
       }
-      if (region && region !== 'any' && p.region !== region) {
-        eligible = false;
-      }
 
-      let score = 65;
+      // Dynamic Responsive Score
+      let score = 50.0;
+
       if (eligible) {
-        if (isEUFreedom) score += 20;
-        else score += Math.min(15, ((income / Math.max(1, adjustedMin)) - 1) * 12);
-        if (climate && climate !== 'any' && p.climate === climate) score += 8;
-        if (priority === 'citizenship' && p.citizenship_pathway_years <= 5) score += 10;
-        if (priority === 'low_tax' && p.tax_rate_pct <= 15) score += 10;
-        if (income >= (p.cost_of_living_usd * 2)) score += 5;
-        score = Math.min(99, Math.round(score));
+        // Region Swing (+15% or -20%)
+        if (region && region !== 'any') {
+          if (p.region === region) score += 15.0;
+          else score -= 20.0;
+        }
+
+        if (isEUFreedom) {
+          score += 20.0;
+        } else if (adjustedMin > 0) {
+          let incomeRatio = income / adjustedMin;
+          score += Math.min(25.0, (incomeRatio - 1.0) * 15.0);
+        }
+
+        if (savings > 0 && p.min_savings_usd > 0 && savings >= p.min_savings_usd * 1.5) {
+          score += 10.0;
+        }
+
+        // Priority Swing (+15% or -10%)
+        if (priority === 'low_tax') {
+          if (p.tax_rate_pct === 0) score += 15.0;
+          else if (p.tax_rate_pct <= 15) score += 10.0;
+          else score -= 10.0;
+        } else if (priority === 'low_cost' && p.cost_of_living_usd <= 1300) {
+          score += 15.0;
+        } else if (priority === 'quality_of_life' && p.quality_of_life_score >= 88) {
+          score += 12.0;
+        } else if (priority === 'citizenship' && p.citizenship_pathway_years <= 5) {
+          score += 15.0;
+        } else if (priority === 'fast_process' && p.processing_time_months <= 1) {
+          score += 15.0;
+        }
+
+        score = Math.max(15, Math.min(99, Math.round(score)));
       } else {
         score = Math.max(15, Math.round(30 - (shortfall / 200)));
       }

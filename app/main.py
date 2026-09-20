@@ -1,15 +1,15 @@
-from dotenv import load_dotenv
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 
-load_dotenv()
-
 from app.core.auth import get_current_user
+from app.core.config import get_settings
 from app.core.i18n import load_locales
 from app.core.templates import templates
 from app.modules.auth_router import auth_router
 from app.modules.discovery.router import discovery_router
 
+settings = get_settings()
+settings.validate_for_startup()
 load_locales()
 
 app = FastAPI(title="RelocateMind - Supabase Engine")
@@ -20,6 +20,9 @@ async def add_user_context(request: Request, call_next):
     user = get_current_user(request)
     request.state.is_authenticated = user is not None
     response = await call_next(request)
+    response.headers.setdefault("X-Content-Type-Options", "nosniff")
+    response.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
+    response.headers.setdefault("X-Frame-Options", "DENY")
     return response
 
 

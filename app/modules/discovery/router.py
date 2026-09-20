@@ -1,11 +1,15 @@
 import json
 from typing import Optional
+
 from fastapi import APIRouter, Form, Request, Response
 from fastapi.responses import HTMLResponse, RedirectResponse
+from pydantic import ValidationError
 
-from app.core.auth import create_signed_token, parse_signed_token
 from app.core.templates import templates
-from app.modules.discovery.matcher import calculate_matches, load_countries_data
+from app.models.profile import AssessmentInput
+from app.modules.discovery.matcher import load_countries_data
+from app.modules.discovery.service import calculate_matches_for_assessment
+from app.modules.discovery.session import read_assessment_cookie, set_assessment_cookie
 
 discovery_router = APIRouter()
 
@@ -33,62 +37,47 @@ def process_match(
     priority: Optional[str] = Form(None),
     timeline: Optional[str] = Form(None),
 ):
-    matches = calculate_matches(
-        passport_country=passport_country,
-        monthly_income=monthly_income,
-        income_type=income_type,
-        savings=savings,
-        dependents=dependents,
-        region=region,
-        climate=climate,
-        priority=priority,
-        timeline=timeline,
-    )
+    try:
+        assessment = AssessmentInput.model_validate(
+            {
+                "passport_country": passport_country,
+                "monthly_income": monthly_income,
+                "income_type": income_type,
+                "savings": savings,
+                "dependents": dependents,
+                "region": region,
+                "climate": climate or "any",
+                "priority": priority,
+                "timeline": timeline,
+            }
+        )
+    except ValidationError:
+        return RedirectResponse(url="/free-test?error=invalid_input", status_code=303)
 
-    test_payload = {
-        "passport_country": passport_country,
-        "monthly_income": monthly_income,
-        "income_type": income_type,
-        "savings": savings,
-        "dependents": dependents,
-        "region": region,
-        "climate": climate,
-        "priority": priority,
-        "timeline": timeline,
-        "matches": matches,
-    }
-
-    signed_test_cookie = create_signed_token(test_payload)
-
+    # Validate the complete dataset/result contract before issuing the redirect.
+    calculate_matches_for_assessment(assessment)
     redirect = RedirectResponse(url="/results", status_code=303)
-    redirect.set_cookie(
-        key="anon_test_data",
-        value=signed_test_cookie,
-        httponly=True,
-        max_age=3600,
-        samesite="lax",
-    )
+    set_assessment_cookie(redirect, assessment)
     return redirect
 
 
 @discovery_router.get("/results", response_class=HTMLResponse)
 def results_page(request: Request):
-    test_cookie = request.cookies.get("anon_test_data")
-    test_data = parse_signed_token(test_cookie) if test_cookie else None
-
-    if not test_data:
+    assessment = read_assessment_cookie(request)
+    if not assessment:
         return RedirectResponse(url="/free-test", status_code=303)
 
+    snapshot = calculate_matches_for_assessment(assessment)
     return templates.TemplateResponse(
         request=request,
         name="results.html",
         context={
-            "matches": test_data.get("matches", []),
-            "passport_country": test_data.get("passport_country"),
-            "monthly_income": test_data.get("monthly_income"),
-            "income_type": test_data.get("income_type"),
-            "dependents": test_data.get("dependents"),
-            "priority": test_data.get("priority"),
-            "timeline": test_data.get("timeline"),
+            "matches": [match.model_dump() for match in snapshot.matches],
+            "passport_country": assessment.passport_country,
+            "monthly_income": assessment.monthly_income,
+            "income_type": assessment.income_type,
+            "dependents": assessment.dependents,
+            "priority": assessment.priority,
+            "timeline": assessment.timeline,
         },
     )

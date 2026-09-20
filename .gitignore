@@ -26,3 +26,6 @@ Thumbs.db
 # Repomix / AI Export files
 repomix-output.*
 project_context.*
+
+# Freebuff local metadata
+.freebuff/

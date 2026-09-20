@@ -2,15 +2,16 @@ import base64
 import hashlib
 import hmac
 import json
-import os
 from typing import Optional, Dict, Any
+
 from fastapi import Request
-from dotenv import load_dotenv
-from app.database import supabase
 
-load_dotenv()
+from app.core.config import get_settings
+from app.database import get_supabase
 
-SECRET_KEY = os.getenv("SECRET_KEY", "relocation-app-secret-key-change-in-prod")
+
+def _secret_key() -> str:
+    return get_settings().require_secret_key()
 
 
 def create_signed_token(data: dict) -> str:
@@ -18,7 +19,7 @@ def create_signed_token(data: dict) -> str:
     json_bytes = json.dumps(data).encode("utf-8")
     b64_payload = base64.urlsafe_b64encode(json_bytes).decode("utf-8")
     signature = hmac.new(
-        SECRET_KEY.encode(), b64_payload.encode(), hashlib.sha256
+        _secret_key().encode(), b64_payload.encode(), hashlib.sha256
     ).hexdigest()
     return f"{b64_payload}.{signature}"
 
@@ -30,7 +31,7 @@ def parse_signed_token(token: str) -> Optional[dict]:
     try:
         b64_payload, signature = token.split(".", 1)
         expected_sig = hmac.new(
-            SECRET_KEY.encode(), b64_payload.encode(), hashlib.sha256
+            _secret_key().encode(), b64_payload.encode(), hashlib.sha256
         ).hexdigest()
         if hmac.compare_digest(signature, expected_sig):
             json_bytes = base64.urlsafe_b64decode(b64_payload)
@@ -48,7 +49,7 @@ def get_current_user(request: Request) -> Optional[Dict[str, Any]]:
     if not token:
         return None
     try:
-        response = supabase.auth.get_user(token)
+        response = get_supabase().auth.get_user(token)
         if response and response.user:
             return {
                 "id": response.user.id,

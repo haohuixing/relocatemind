@@ -1,28 +1,23 @@
-import os
-from dotenv import load_dotenv
-from supabase import create_client, Client
+from __future__ import annotations
 
-load_dotenv()
+from functools import lru_cache
 
-SUPABASE_URL = os.getenv("SUPABASE_URL", "https://your-project-ref.supabase.co")
-SUPABASE_KEY = (
-    os.getenv("SUPABASE_ANON_KEY")
-    or os.getenv("SUPABASE_KEY")
-    or "your-supabase-anon-key"
-)
-SUPABASE_SERVICE_ROLE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "")
+from supabase import Client, create_client
 
-# Standard client (respects RLS)
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
-
-# Admin client (bypasses RLS for server-side profile creation during signup)
-supabase_admin: Client = (
-    create_client(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
-    if SUPABASE_SERVICE_ROLE_KEY
-    else supabase
-)
+from app.core.config import get_settings
 
 
+@lru_cache(maxsize=1)
 def get_supabase() -> Client:
-    """Dependency helper to return initialized Supabase client."""
-    return supabase
+    """Return the normal Supabase client configured with the public/anon key."""
+    settings = get_settings()
+    url, key = settings.require_supabase_anon_config()
+    return create_client(url, key)
+
+
+@lru_cache(maxsize=1)
+def get_supabase_admin() -> Client:
+    """Return the privileged client; never silently downgrade to the anon client."""
+    settings = get_settings()
+    url, key = settings.require_supabase_admin_config()
+    return create_client(url, key)

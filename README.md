@@ -14,3 +14,10 @@ RelocateMind is a high-tech global mobility discovery engine that matches digita
 1. **Install dependencies**:
    ```bash
    pip install -r requirements.txt
+   ```
+
+## Agent context
+
+Future coding agents should begin with [`AGENTS.md`](AGENTS.md) and [`PROMPT.md`](PROMPT.md), then read the current project state and relevant documents under [`docs/agent-context/`](docs/agent-context/). The context files distinguish verified implementation from planned architecture and must not contain secrets or private production data.
+
+The root [`PROMPT.txt`](PROMPT.txt) is retained as historical context and is not the canonical handoff.
