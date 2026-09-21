@@ -93,6 +93,37 @@ If a published program version is wrong:
 6. Decide whether affected users require notification or report regeneration.
 7. Correct the source proposal before republishing.
 
+## Git handoff and publishing to `main`
+
+The canonical branch is `main`, and the GitHub remote is `origin`. Before changing or publishing anything, inspect the working tree:
+
+```bash
+git status --short --branch
+git log -1 --oneline --decorate
+```
+
+For an ordinary change:
+
+1. Review the diff and explicitly select only owned files.
+2. Run the relevant tests/checks and `git diff --check`.
+3. Review staged content with `git diff --cached --stat` and `git diff --cached --name-status`.
+4. Commit with a concise message.
+5. Push normally:
+
+```bash
+git push origin main
+```
+
+Do not use `git add .` when untracked workspace artifacts or unrelated edits exist. Never stage `.env`, `.freebuff/`, virtual environments, local databases, or the accidental artifacts recorded in `CURRENT_STATE.md`.
+
+A force push is not part of the normal workflow. It is only acceptable when the repository owner explicitly intends to replace remote branch history. Prefer the guarded form:
+
+```bash
+git push --force-with-lease origin main
+```
+
+After pushing, verify the GitHub commit and then inspect the Render deployment. Do not claim deployment success until Render logs show a healthy startup and the main user flows have been smoke-tested.
+
 ## Deployment rollback
 
 Before deployment, record the current application revision, migration level, and active program-data version. If the release is unhealthy:

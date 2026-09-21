@@ -2,8 +2,10 @@
 
 - **Last verified:** 2026-09-20
 - **Branch at verification:** `main`
+- **Baseline revision at verification:** `5cb8d3e` (`origin/main`)
 - **Overall status:** `in progress`
 - **Current milestone:** Foundation hardening in progress; canonical assessment boundary implemented
+- **Handoff status:** Safe to start a new agent session after reading this file and the required context documents. Always inspect the current `HEAD` and working tree because later documentation/code commits may supersede the baseline revision above.
 
 ## What is implemented
 
@@ -26,15 +28,18 @@ The approved target architecture—typed repositories, true server-side versione
 
 The context-system task added `AGENTS.md`, `PROMPT.md`, `docs/agent-context/*.md`, and the README agent-context pointer. These files are owned by this task.
 
-The working tree was not clean during context-system work. Pre-existing changes that this task does not own:
+The foundation and context changes were committed and pushed to `main` in `5cb8d3e`. At the last verification, the local branch matched `origin/main`:
 
-- modified `PROMPT.txt`;
-- modified `app/modules/discovery/matcher.py`;
-- modified `data/countries.json`;
-- modified `templates/free_test.html`;
-- untracked `.freebuff/` directory.
+```text
+## main...origin/main
+```
 
-Do not overwrite, reset, stash, stage, or commit these changes as part of unrelated work.
+Two accidental untracked workspace artifacts were present:
+
+- `git`
+- `h --force origin main`
+
+They are not part of the application and must not be staged or committed. The `.freebuff/` directory is local metadata and is ignored by `.gitignore`; it must also remain uncommitted. Do not overwrite, reset, stash, stage, or delete unrelated working-tree items without explicit user approval.
 
 ## Known implementation risks
 
@@ -54,7 +59,7 @@ Do not overwrite, reset, stash, stage, or commit these changes as part of unrela
 - Repository inspection performed on 2026-09-20.
 - A first regression suite now exists at `tests/test_assessment_contract.py`.
 - Validation of the context and foundation changes included file/directory review, `git diff --check`, `venv/Scripts/python.exe -m compileall app tests`, `venv/Scripts/python.exe -m unittest discover -s tests -v`, and application import verification.
-- The current three assessment contract tests pass.
+- The assessment contract and discovery route regression tests pass in the project virtual environment (`7 tests passed` in the latest recorded run).
 - Live Supabase route behavior still requires staging credentials and has not been exercised here.
 - The next implementation agent should add route/session tests and then implement true server-side anonymous assessment persistence.
 
@@ -64,13 +69,22 @@ The layered handoff system is implemented in the owned files listed above. The f
 
 ## Immediate next action
 
-Start the engineering overhaul with a non-destructive baseline:
+Start the engineering overhaul with a non-destructive baseline. First inspect `git status --short --branch`; preserve the two untracked artifacts listed above and do not use broad staging commands:
 
 1. add route-level tests for invalid/valid `/match` submissions and transitional cookie reads;
 2. replace the transitional signed assessment cookie with an opaque server-side assessment session and migration path;
 3. move legacy auth/dashboard Supabase calls behind typed repositories;
 4. add CSRF/rate limiting and secure session tests;
 5. then introduce database migrations for persistent assessment snapshots and checklist progress.
+
+## Git and deployment handoff
+
+- The canonical remote branch is `origin/main`.
+- The published foundation baseline is `5cb8d3e`; later handoff/documentation commits may supersede it without changing the implementation claims recorded here.
+- A normal documentation/code update should be reviewed, validated, staged explicitly, committed, and pushed with `git push origin main`.
+- Do not force-push by default. A force push is only appropriate when the solo repository owner explicitly intends to replace remote history; use `git push --force-with-lease origin main` rather than plain `--force` when possible.
+- Never stage `.env`, `.freebuff/`, virtual environments, databases, or the accidental untracked artifacts above.
+- Render deploys from the GitHub `main` revision; verify the pushed commit and inspect Render logs after deployment.
 
 ## Unresolved decisions
 
